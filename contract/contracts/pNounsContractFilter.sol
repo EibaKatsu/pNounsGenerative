@@ -16,9 +16,9 @@ contract pNounsContractFilter is ProviderToken3, AccessControlEnumerable {
     // address public admin; // コントラクト管理者。オーナーか管理者がset系メソッドを実行可能
 
     IContractAllowListProxy public cal;
-    uint256 public calLevel = 1;
+    uint256 public calLevel = 0;
 
-    uint256 constant unixtime_20230101 = 1672498800;
+    // uint256 constant unixtime_20230101 = 1672498800;
 
     constructor(
         IAssetProvider _assetProvider,
@@ -81,11 +81,16 @@ contract pNounsContractFilter is ProviderToken3, AccessControlEnumerable {
         virtual
         override(ERC721WithOperatorFilter, IERC721A)
     {
-        // 2023-01-01 までは販売を制限
-        require(
-            block.timestamp > unixtime_20230101,
-            "cant sale on markets until 2023/1/1."
-        );
+        // 2023-01-01 までは販売を制限      ＊ 任意タイミングで変更するため、calLevel=0で対応
+        // require(
+        //     block.timestamp > unixtime_20230101,
+        //     "cant sale on markets until 2023/1/1."
+        // );
+
+        // calLevel=0は calProxyに依存せずにfalseにする
+        if(calLevel == 0){
+            revert("cant trade in marcket places");
+        }
 
         if (address(cal) != address(0)) {
             require(
@@ -102,12 +107,17 @@ contract pNounsContractFilter is ProviderToken3, AccessControlEnumerable {
         virtual
         override(ERC721WithOperatorFilter, IERC721A)
     {
-        // 2023-01-01 までは販売を制限
-        require(
-            block.timestamp > unixtime_20230101,
-            "cant sale on markets until 2023/1/1."
-        );
+        // 2023-01-01 までは販売を制限      ＊ 任意タイミングで変更するため、calLevel=0で対応
+        // require(
+        //     block.timestamp > unixtime_20230101,
+        //     "cant sale on markets until 2023/1/1."
+        // );
 
+        // calLevel=0は calProxyに依存せずにfalseにする
+        if(calLevel == 0){
+            revert("cant trade in marcket places");
+        }
+        
         if (address(cal) != address(0)) {
             require(cal.isAllowed(to, calLevel) == true, "address no list");
         }
