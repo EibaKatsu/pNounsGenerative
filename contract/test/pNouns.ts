@@ -358,10 +358,6 @@ describe("pNounsToken Presale mint", function () {
     const [purchaseUnit] = await token.functions.purchaseUnit();
     expect(purchaseUnit).equal(5)
 
-    const [totalSupply] = await token.functions.totalSupply();
-    tx = await token.setMintLimit(totalSupply.add(5));
-    await tx.wait();
-
     // authorized を含むマークルツリー
     const tree = createTree([{ address: authorized.address },{ address: authorized2.address }]);
     await token.functions.setMerkleRoot(tree.getHexRoot());
@@ -371,7 +367,15 @@ describe("pNounsToken Presale mint", function () {
 
     const [mintPrice] = await token.functions.mintPrice();
 
-    await expect(token.connect(authorized2).functions.mintPNouns(10, proof, { value: mintPrice.mul(10) }))
+    const [totalSupply] = await token.functions.totalSupply();
+    tx = await token.setMintLimit(totalSupply.add(5));
+    await tx.wait();
+
+    // 5個まではエラーにならない
+    token.connect(authorized2).functions.mintPNouns(5, proof, { value: mintPrice.mul(5) });
+
+    // 次の5個はエラー
+    await expect(token.connect(authorized2).functions.mintPNouns(5, proof, { value: mintPrice.mul(5) }))
     .to.be.revertedWith("Sold out");
 
     tx = await token.setMintLimit(2100);
@@ -418,8 +422,6 @@ describe("pNounsToken Presale mint", function () {
       expect(purchaseUnit).equal(5)
       const [mintPrice] = await token.functions.mintPrice();
       expect(mintPrice).equal(ethers.utils.parseEther("0.05"));
-      const [count] = await token.functions.totalSupply();
-      const [mintLimit] = await token.functions.mintLimit();
 
       // ownerを含まないマークルツリー
     const tree = createTree([{ address: authorized.address },{ address: authorized2.address }]);
@@ -428,12 +430,20 @@ describe("pNounsToken Presale mint", function () {
       // ownerのマークルリーフ
       const proof = tree.getHexProof(ethers.utils.solidityKeccak256(['address'], [owner.address]));
 
-      await expect(token.functions.mintPNouns(mintLimit.toNumber() + 1, proof, { value: 0 }))
+      const [count] = await token.functions.totalSupply();
+      await token.setMintLimit(count.toNumber()+1);
+      const [mintLimit] = await token.functions.mintLimit();
+
+      // 1つ目はエラーにならない
+      token.functions.mintPNouns( 1, proof, { value: 0 });
+      // 2つ目はエラーになる
+      await expect(token.functions.mintPNouns( 1, proof, { value: 0 }))
       .to.be.revertedWith("Sold out");
   
       const [count2] = await token.functions.totalSupply();
       const [mintLimit2] = await token.functions.mintLimit();
 
+      await token.setMintLimit(2100);
     });
 
     it("mint free error", async function () {

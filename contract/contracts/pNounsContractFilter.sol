@@ -11,19 +11,18 @@ import "contract-allow-list/contracts/proxy/interface/IContractAllowListProxy.so
 
 // contract pNounsToken is ProviderToken, ERC721P2P {
 contract pNounsContractFilter is ProviderToken3 {
-
     address public admin; // コントラクト管理者。オーナーか管理者がset系メソッドを実行可能
 
     IContractAllowListProxy public cal;
     uint256 public calLevel = 1;
 
+    uint256 constant unixtime_20230101 = 1672498800;
+
     constructor(
         IAssetProvider _assetProvider,
         string memory _title,
         string memory _shortTitle
-    )
-        ProviderToken3(_assetProvider, _title, _shortTitle)
-    {}
+    ) ProviderToken3(_assetProvider, _title, _shortTitle) {}
 
     ////////// modifiers //////////
     modifier onlyAdminOrOwner() {
@@ -41,7 +40,10 @@ contract pNounsContractFilter is ProviderToken3 {
     }
 
     ////////////// CAL 関連 ////////////////
-    function setCalContract(IContractAllowListProxy _cal) external onlyAdminOrOwner {
+    function setCalContract(IContractAllowListProxy _cal)
+        external
+        onlyAdminOrOwner
+    {
         cal = _cal;
     }
 
@@ -53,8 +55,14 @@ contract pNounsContractFilter is ProviderToken3 {
     function setApprovalForAll(address operator, bool approved)
         public
         virtual
-        override(ERC721WithOperatorFilter,IERC721A) 
+        override(ERC721WithOperatorFilter, IERC721A)
     {
+        // 2023-01-01 までは販売を制限
+        require(
+            block.timestamp > unixtime_20230101,
+            "cant sale on markets until 2023/1/1."
+        );
+
         if (address(cal) != address(0)) {
             require(
                 cal.isAllowed(operator, calLevel) == true,
@@ -68,8 +76,14 @@ contract pNounsContractFilter is ProviderToken3 {
         public
         payable
         virtual
-        override(ERC721WithOperatorFilter,IERC721A) 
+        override(ERC721WithOperatorFilter, IERC721A)
     {
+        // 2023-01-01 までは販売を制限
+        require(
+            block.timestamp > unixtime_20230101,
+            "cant sale on markets until 2023/1/1."
+        );
+
         if (address(cal) != address(0)) {
             require(cal.isAllowed(to, calLevel) == true, "address no list");
         }
