@@ -25,13 +25,21 @@ contract pNounsToken is pNounsContractFilter {
 
     mapping(address => uint256) public mintCount; // アドレスごとのミント数
 
-    constructor(IAssetProvider _assetProvider, address _treasuryAddress)
-        pNounsContractFilter(_assetProvider, "pNouns NFT", "pNouns")
+    constructor(
+        IAssetProvider _assetProvider,
+        address _treasuryAddress,
+        address[] memory _administrators
+    )
+        pNounsContractFilter(
+            _assetProvider,
+            "pNouns NFT",
+            "pNouns",
+            _administrators
+        )
     {
         description = "This is the first NFT of pNouns project (https://pnouns.wtf/).";
         mintPrice = 0.05 ether;
         mintLimit = 2100;
-        admin = address(0); // TODO to be updated
         treasuryAddress = _treasuryAddress;
 
         // for (uint256 i; i < mintForTreasuryAddress; i++) {
@@ -48,7 +56,7 @@ contract pNounsToken is pNounsContractFilter {
         bytes32[] calldata _merkleProof // マークルツリー
     ) external payable {
         // オーナーチェック
-        if (owner() != _msgSender() && admin != _msgSender()) {
+        if (!hasAdminOrOwner()) {
             // originチェック
             require(tx.origin == msg.sender, "cannot mint from non-origin");
 
@@ -62,13 +70,15 @@ contract pNounsToken is pNounsContractFilter {
                     MerkleProof.verifyCalldata(_merkleProof, merkleRoot, leaf),
                     "Invalid Merkle Proof"
                 );
-            }
-            else if(phase == SalePhase.PublicSale){
+            } else if (phase == SalePhase.PublicSale) {
                 // チェック不要
             }
 
             // ミント数が購入単位と一致していること,ミント数が設定されていること
-            require(_mintAmount % purchaseUnit == 0 && _mintAmount > 0, "Invalid purchaseUnit");
+            require(
+                _mintAmount % purchaseUnit == 0 && _mintAmount > 0,
+                "Invalid purchaseUnit"
+            );
 
             // アドレスごとのミント数上限チェック
             require(
@@ -102,7 +112,9 @@ contract pNounsToken is pNounsContractFilter {
             treasuryAddress != address(0),
             "treasuryAddress shouldn't be 0"
         );
-        (bool sent, ) = payable(treasuryAddress).call{value: address(this).balance}("");
+        (bool sent, ) = payable(treasuryAddress).call{
+            value: address(this).balance
+        }("");
         require(sent, "failed to move fund to treasuryAddress contract");
     }
 

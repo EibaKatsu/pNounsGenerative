@@ -8,10 +8,12 @@ pragma solidity ^0.8.6;
 
 import "./libs/ProviderToken3.sol";
 import "contract-allow-list/contracts/proxy/interface/IContractAllowListProxy.sol";
+import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 
-// contract pNounsToken is ProviderToken, ERC721P2P {
-contract pNounsContractFilter is ProviderToken3 {
-    address public admin; // コントラクト管理者。オーナーか管理者がset系メソッドを実行可能
+contract pNounsContractFilter is ProviderToken3, AccessControlEnumerable {
+
+    bytes32 public constant CONTRACT_ADMIN = keccak256("CONTRACT_ADMIN");
+    // address public admin; // コントラクト管理者。オーナーか管理者がset系メソッドを実行可能
 
     IContractAllowListProxy public cal;
     uint256 public calLevel = 1;
@@ -21,22 +23,44 @@ contract pNounsContractFilter is ProviderToken3 {
     constructor(
         IAssetProvider _assetProvider,
         string memory _title,
-        string memory _shortTitle
-    ) ProviderToken3(_assetProvider, _title, _shortTitle) {}
+        string memory _shortTitle,
+        address[] memory _administrators
+    ) ProviderToken3(_assetProvider, _title, _shortTitle) {
+        _setRoleAdmin(CONTRACT_ADMIN, CONTRACT_ADMIN);
+
+        for (uint256 i = 0; i < _administrators.length; i++) {
+            _setupRole(CONTRACT_ADMIN, _administrators[i]);
+        }
+    }
 
     ////////// modifiers //////////
     modifier onlyAdminOrOwner() {
         require(
-            owner() == _msgSender() || admin == _msgSender(),
+            owner() == _msgSender() || hasRole(CONTRACT_ADMIN, _msgSender()),
             "caller is not the admin"
         );
         _;
     }
 
+    ////////// internal functions start //////////
+    function hasAdminOrOwner() internal view returns (bool) {
+        return owner() == _msgSender() || hasRole(CONTRACT_ADMIN, _msgSender());
+    }
+
     ////////// onlyOwner functions start //////////
-    function setAdmin(address _admin) external onlyOwner {
-        require(_admin != address(0), "address shouldn't be 0");
-        admin = _admin;
+    function setAdminRole(address[] memory _administrators) external onlyOwner {
+        for (uint256 i = 0; i < _administrators.length; i++) {
+            _setupRole(CONTRACT_ADMIN, _administrators[i]);
+        }
+    }
+
+    function revokeAdminRole(address[] memory _administrators)
+        external
+        onlyOwner
+    {
+        for (uint256 i = 0; i < _administrators.length; i++) {
+            _revokeRole(CONTRACT_ADMIN, _administrators[i]);
+        }
     }
 
     ////////////// CAL 関連 ////////////////
@@ -88,5 +112,17 @@ contract pNounsContractFilter is ProviderToken3 {
             require(cal.isAllowed(to, calLevel) == true, "address no list");
         }
         ERC721WithOperatorFilter.approve(to, tokenId);
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(AccessControlEnumerable, ERC721A, IERC721A)
+        returns (bool)
+    {
+        return
+            interfaceId == type(AccessControlEnumerable).interfaceId ||
+            interfaceId == type(IERC721A).interfaceId ||
+            super.supportsInterface(interfaceId);
     }
 }
