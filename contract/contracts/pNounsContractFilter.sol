@@ -50,7 +50,7 @@ contract pNounsContractFilter is ProviderToken3, AccessControlEnumerable {
     ////////// onlyOwner functions start //////////
     function setAdminRole(address[] memory _administrators) external onlyOwner {
         for (uint256 i = 0; i < _administrators.length; i++) {
-            _setupRole(CONTRACT_ADMIN, _administrators[i]);
+            _grantRole(CONTRACT_ADMIN, _administrators[i]);
         }
     }
 
