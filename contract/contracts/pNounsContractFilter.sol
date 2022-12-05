@@ -6,12 +6,11 @@
 
 pragma solidity ^0.8.6;
 
-import "./libs/ProviderToken3.sol";
+import "./libs/ProviderTokenA1.sol";
 import "contract-allow-list/contracts/proxy/interface/IContractAllowListProxy.sol";
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 
-contract pNounsContractFilter is ProviderToken3, AccessControlEnumerable {
-
+contract pNounsContractFilter is ProviderTokenA1, AccessControlEnumerable {
     bytes32 public constant CONTRACT_ADMIN = keccak256("CONTRACT_ADMIN");
     // address public admin; // コントラクト管理者。オーナーか管理者がset系メソッドを実行可能
 
@@ -25,7 +24,7 @@ contract pNounsContractFilter is ProviderToken3, AccessControlEnumerable {
         string memory _title,
         string memory _shortTitle,
         address[] memory _administrators
-    ) ProviderToken3(_assetProvider, _title, _shortTitle) {
+    ) ProviderTokenA1(_assetProvider, _title, _shortTitle) {
         _setRoleAdmin(CONTRACT_ADMIN, CONTRACT_ADMIN);
 
         for (uint256 i = 0; i < _administrators.length; i++) {
@@ -79,7 +78,7 @@ contract pNounsContractFilter is ProviderToken3, AccessControlEnumerable {
     function setApprovalForAll(address operator, bool approved)
         public
         virtual
-        override(ERC721WithOperatorFilter, IERC721A)
+        override
     {
         // 2023-01-01 までは販売を制限      ＊ 任意タイミングで変更するため、calLevel=0で対応
         // require(
@@ -88,7 +87,7 @@ contract pNounsContractFilter is ProviderToken3, AccessControlEnumerable {
         // );
 
         // calLevel=0は calProxyに依存せずにfalseにする
-        if(calLevel == 0){
+        if (calLevel == 0) {
             revert("cant trade in marcket places");
         }
 
@@ -98,14 +97,14 @@ contract pNounsContractFilter is ProviderToken3, AccessControlEnumerable {
                 "address no list"
             );
         }
-        ERC721WithOperatorFilter.setApprovalForAll(operator, approved);
+        super.setApprovalForAll(operator, approved);
     }
 
     function approve(address to, uint256 tokenId)
         public
         payable
         virtual
-        override(ERC721WithOperatorFilter, IERC721A)
+        override
     {
         // 2023-01-01 までは販売を制限      ＊ 任意タイミングで変更するため、calLevel=0で対応
         // require(
@@ -114,25 +113,25 @@ contract pNounsContractFilter is ProviderToken3, AccessControlEnumerable {
         // );
 
         // calLevel=0は calProxyに依存せずにfalseにする
-        if(calLevel == 0){
+        if (calLevel == 0) {
             revert("cant trade in marcket places");
         }
 
         if (address(cal) != address(0)) {
             require(cal.isAllowed(to, calLevel) == true, "address no list");
         }
-        ERC721WithOperatorFilter.approve(to, tokenId);
+        super.approve(to, tokenId);
     }
 
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(AccessControlEnumerable, ERC721A, IERC721A)
+        override(AccessControlEnumerable, ERC721A)
         returns (bool)
     {
         return
             interfaceId == type(AccessControlEnumerable).interfaceId ||
-            interfaceId == type(IERC721A).interfaceId ||
-            super.supportsInterface(interfaceId);
+            interfaceId == type(AccessControl).interfaceId ||
+            ERC721A.supportsInterface(interfaceId);
     }
 }
