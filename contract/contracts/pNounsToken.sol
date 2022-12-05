@@ -51,6 +51,32 @@ contract pNounsToken is pNounsContractFilter {
         mintCount[treasuryAddress] += mintForTreasuryAddress;
     }
 
+    function adminMint(address[] memory _to, uint256[] memory _num)
+        public
+        onlyAdminOrOwner
+    {
+        uint256 mintTotal = 0;
+        uint256 limitAdminMint = 100; // 引数間違いに備えてこのトランザクション内での最大ミント数を設定しておく
+
+        // 引数配列の整合性チェック
+        require(_to.length == _num.length, "args error");
+
+        // ミント数合計が最大ミント数を超えていないか
+        for (uint256 i = 0; i < _num.length; i++) {
+            mintTotal += _num[i];
+            require(_num[i] > 0, "mintAmount is zero");
+            require(mintTotal <= limitAdminMint, "exceed limitAdminMint");
+            require(totalSupply() + mintTotal <= mintLimit, "exceed mintLimit");
+        }
+
+        // ミント処理
+        for (uint256 i = 0; i < _to.length; i++) {
+            _safeMint(_to[i], _num[i]);
+            nextTokenId += _num[i];
+            mintCount[_to[i]] += _num[i];
+        }
+    }
+
     function mintPNouns(
         uint256 _mintAmount, // ミント数
         bytes32[] calldata _merkleProof // マークルツリー
