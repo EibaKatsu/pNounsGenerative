@@ -1,5 +1,9 @@
 <template>
   <div>
+    <div v-if="nextImage">
+      <img :src="nextImage" class="mr-1 mb-1 inline-block w-96" />
+      <p>Next Token Id: {{ `${totalSupply}` }}</p>
+    </div>
     <p>Available: {{ `${mintLimit - totalSupply}/${mintLimit}` }}</p>
     <NetworkGate :expectedNetwork="chainId">
       <p>Wallet: {{ wallet }}</p>
@@ -66,12 +70,16 @@ import { getAddresses } from "@/utils/const";
 import References from "@/components/References.vue";
 import { addresses } from "@/utils/addresses";
 import { weiToEther } from "@/utils/currency";
+import { svgImageFromSvgPart, sampleColors } from "@/models/point";
 
 const ProviderTokenEx = {
   wabi: require("@/abis/ProviderToken.json"), // wrapped abi
 };
 const ITokenGate = {
   wabi: require("@/abis/ITokenGate.json"), // wrapped abi
+};
+const ISVGHelper = {
+  wabi: require("@/abis/ISVGHelper.json"), // wrapped abi
 };
 
 console.log("*** addresses", addresses);
@@ -89,12 +97,14 @@ export default defineComponent({
     "tokenGateAddress",
     "restricted",
     "limit",
+    "assetProvider",
   ],
+  emits: ['minted'],
   components: {
     NetworkGate,
     References,
   },
-  setup(props) {
+  setup(props, context) {
     const route = useRoute();
     const store = useStore();
     const totalBalance = ref<number>(0);
@@ -106,6 +116,8 @@ export default defineComponent({
       () => `${weiToEther(mintPrice.value)} ETH`
     );
     const isMinting = ref<boolean>(false);
+    const nextImage = ref<string | null>(null);
+    const svgHelperAddress = addresses["svgHelper"][props.network];
 
     const checkTokenGate = async () => {
       console.log("### calling totalBalanceOf");
@@ -155,6 +167,13 @@ export default defineComponent({
       ITokenGate.wabi.abi,
       provider
     );
+    const svgHelper = new ethers.Contract(
+      svgHelperAddress,
+      ISVGHelper.wabi.abi,
+      provider
+    );
+    const providerAddress = addresses[props.assetProvider || "dotNouns"][props.network];
+
     const tokens = ref<Token[]>([]);
     const fetchTokens = async () => {
       const [supply] = await contractRO.functions.totalSupply();
@@ -162,6 +181,15 @@ export default defineComponent({
       const [limit] = await contractRO.functions.mintLimit();
       mintLimit.value = limit.toNumber();
       console.log("totalSupply/mintLimit", totalSupply.value, mintLimit.value);
+      if (totalSupply.value < mintLimit.value) {
+        const [svgPart, tag, gas] = await svgHelper.functions.generateSVGPart(
+          providerAddress,
+          totalSupply.value
+        );
+        nextImage.value = svgImageFromSvgPart(svgPart, tag, "");
+      } else {
+        nextImage.value = null;
+      }
       const updatedTokens = [];
       for (var tokenId = Math.max(0, supply - 4); tokenId < supply; tokenId++) {
         const [tokenURI, gas] = await contractRO.functions.debugTokenURI(
@@ -193,6 +221,7 @@ export default defineComponent({
         async (from, to, tokenId) => {
           console.log("*** event.Transfer calling fetchTokens");
           fetchTokens();
+          context.emit("minted");
         }
       );
     });
@@ -253,6 +282,7 @@ export default defineComponent({
       isMinting,
       totalSupply,
       mintLimit,
+      nextImage,
     };
   },
 });

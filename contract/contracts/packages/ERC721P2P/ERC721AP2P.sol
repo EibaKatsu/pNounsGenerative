@@ -1,20 +1,14 @@
 // SPDX-License-Identifier: MIT
 
 /**
- * This is a part of an effort to update ERC271 so that the sales transaction
- * becomes decentralized and trustless, which makes it possible to enforce
- * royalities without relying on marketplaces. 
- *
+ * Inherits ERC721 as an extension
  * Please see "https://hackmd.io/@snakajima/BJqG3fkSo" for details. 
- *
- * Created by Satoshi Nakajima (@snakajima)
  */
 
 pragma solidity ^0.8.6;
 
-import "./IERC721AP2P.sol";
+import "./IERC721P2P.sol";
 import { Ownable } from '@openzeppelin/contracts/access/Ownable.sol';
-//import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "erc721a/contracts/extensions/ERC721AQueryable.sol";
 import "./opensea/DefaultOperatorFilterer.sol";
 
@@ -46,7 +40,7 @@ abstract contract ERC721WithOperatorFilter is ERC721A, DefaultOperatorFilterer {
   }
 }
 
-abstract contract ERC721AP2P is IERC721AP2P, ERC721WithOperatorFilter, Ownable {
+abstract contract ERC721AP2P is IERC721P2PCore, ERC721WithOperatorFilter, Ownable {
   mapping (uint256 => uint256) prices;
 
   function setPriceOf(uint256 _tokenId, uint256 _price) public override {
@@ -68,7 +62,6 @@ abstract contract ERC721AP2P is IERC721AP2P, ERC721WithOperatorFilter, Ownable {
     address payable payableTo = payable(tokenOwner);
     payableTo.transfer(msg.value - comission - royalty);
 
-    //_transfer(tokenOwner, _buyer, _tokenId);
     transferFrom(tokenOwner, _buyer, _tokenId);
     prices[_tokenId] = 0; // not on sale any more
   }
@@ -91,7 +84,7 @@ abstract contract ERC721AP2P is IERC721AP2P, ERC721WithOperatorFilter, Ownable {
     */
   }
 
-  function acceptOffer(uint256 _tokenId, IERC721AMarketplace _dealer, uint256 _price) external override {
+  function acceptOffer(uint256 _tokenId, IERC721Marketplace _dealer, uint256 _price) external override {
     setPriceOf(_tokenId, _price);
     _dealer.acceptOffer(this, _tokenId, _price);
   }

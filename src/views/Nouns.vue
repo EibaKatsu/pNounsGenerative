@@ -1,14 +1,16 @@
 <template>
   <div class="mx-auto max-w-3xl p-2 text-left">
-    <p>Images from the on-chain asset provider.</p>
-    <ProviderView assetProvider="dotNouns" :count="4" />
+    <p class="mb-2">Dot Nouns are dynamically generated on the blockchain, taking advantage of the composability of Nouns.</p>
+    <ProviderView v-if="false" assetProvider="dotNouns" network="localhost" :offset="500"/>
     <Mint
       :network="network"
       :tokenGated="true"
       :tokenAddress="tokenAddress"
       :tokenGateAddress="tokenGateAddress"
       :limit="1"
-      :xrestricted="'On-Chain Splatter, Bitcoin Art or Alphabet'"
+      assetProvider="dotNouns"
+      @minted="minted"
+      :restricted="'On-Chain Splatter, Bitcoin Art or Alphabet'"
     />
   </div>
 </template>
@@ -26,17 +28,23 @@ export default defineComponent({
     Mint
   },
   setup() {
+    const offset = ref<number>(0);
     const route = useRoute();
     const network =
-      typeof route.query.network == "string" ? route.query.network : "goerli";
+      typeof route.query.network == "string" ? route.query.network : "mainnet";
     const tokenAddress = addresses.dotNounsToken[network];
     const tokenGateAddress = addresses.dynamic[network];
+    const minted = async () => {
+      console.log("***###*** minted event was fired");
+    };
 
     console.log("*** chainId", network, tokenAddress);
     return {
       network,
       tokenAddress,
-      tokenGateAddress
+      tokenGateAddress,
+      offset,
+      minted
     };
   },
 });

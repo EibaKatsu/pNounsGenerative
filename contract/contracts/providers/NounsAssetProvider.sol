@@ -26,8 +26,6 @@ contract NounsAssetProvider is IAssetProvider, IERC165, Ownable {
 
   NounsToken public immutable nounsToken;
   INounsDescriptor public immutable descriptor;
-  // Nouns multi-sig wallet
-  address public receiver = 0x0BC3807Ec262cB779b38D65b38158acC3bfedE10;
 
   constructor(NounsToken _nounsToken, INounsDescriptor _descriptor) {
     nounsToken = _nounsToken;
@@ -104,13 +102,13 @@ contract NounsAssetProvider is IAssetProvider, IERC165, Ownable {
     length -= start + 6; // "</svg>"
 
     // substring
+    /*
     bytes memory ret = new bytes(length);
     for(uint i = 0; i < length; i++) {
         ret[i] = svg[i+start];
     }
+    */
 
-    // Failed to attempt to create an assembler version of subtring
-    /*
     bytes memory ret;
     assembly {
       ret := mload(0x40)
@@ -121,9 +119,8 @@ contract NounsAssetProvider is IAssetProvider, IERC165, Ownable {
         let data := mload(add(svgMemory, i))
         mstore(add(retMemory, i), data)
       }
-      mstore(0x40, retMemory)
+      mstore(0x40, add(add(ret, 0x20), length))
     }
-    */
 
     svgPart = string(abi.encodePacked(
       '<g id="', _tag, '" transform="scale(3.2)" shape-rendering="crispEdges">\n',
@@ -136,13 +133,9 @@ contract NounsAssetProvider is IAssetProvider, IERC165, Ownable {
   }
 
   function processPayout(uint256 _assetId) external override payable {
-    address payable payableTo = payable(receiver);
+    address payable payableTo = payable(owner());
     payableTo.transfer(msg.value);
     emit Payout(providerKey, _assetId, payableTo, msg.value);
-  }
-
-  function setReceiver(address _receiver) onlyOwner external {
-    receiver = _receiver;
   }
 
   function generateTraits(uint256 _assetId) external pure override returns (string memory traits) {

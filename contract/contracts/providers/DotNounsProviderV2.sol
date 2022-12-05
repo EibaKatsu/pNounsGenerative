@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 /*
- * NounsAssetProvider is a wrapper around NounsDescriptor so that it offers
- * various characters as assets to compose (not individual parts).
+ * DotNounsProvider generates a "dot version" of Nouns characters.
  *
  * Created by Satoshi Nakajima (@snakajima)
  */
@@ -12,17 +11,17 @@ pragma solidity ^0.8.6;
 import { Ownable } from '@openzeppelin/contracts/access/Ownable.sol';
 import "assetprovider.sol/IAssetProvider.sol";
 import '@openzeppelin/contracts/interfaces/IERC165.sol';
-import "../providers/NounsAssetProvider.sol";
+import "../providers/NounsAssetProviderV2.sol";
 import "../packages/graphics/SVG.sol";
 
-contract DotProvider is IAssetProvider, IERC165, Ownable {
+contract DotNounsProviderV2 is IAssetProvider, IERC165, Ownable {
   using Vector for Vector.Struct;
   using Path for uint[];
   using SVG for SVG.Element;
 
-  NounsAssetProvider public provider;
+  NounsAssetProviderV2 public provider;
 
-  constructor(NounsAssetProvider _provider) {
+  constructor(NounsAssetProviderV2 _provider) {
     provider = _provider;
   }
 
@@ -58,6 +57,8 @@ contract DotProvider is IAssetProvider, IERC165, Ownable {
     (svgPart, tag0) = provider.getNounsSVGPart(_assetId);
     tag = string(abi.encodePacked(tag, '_dot32'));
 
+    // We need to use this work-around (1024 circles) because Safari browser is not able to
+    // render <pattern> correctly. 
     svgPart = string(SVG.list([
       SVG.element(bytes(svgPart)),
       SVG.group([

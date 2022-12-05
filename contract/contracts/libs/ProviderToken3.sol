@@ -13,7 +13,7 @@ pragma solidity ^0.8.6;
 
 // import { Ownable } from '@openzeppelin/contracts/access/Ownable.sol';
 // import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "../packages/ERC721P2P/ERC721AP2P.sol";
+import "../packages/ERC721P2P/ERC721P2P.sol";
 import { Base64 } from 'base64-sol/base64.sol';
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "assetprovider.sol/IAssetProvider.sol";
@@ -28,7 +28,7 @@ import "assetprovider.sol/IAssetProvider.sol";
  *   provider.processPayout{value:msg.value}(assetId)
  *
  */
-abstract contract ProviderToken3 is ERC721AP2P {
+abstract contract ProviderToken3 is ERC721P2P {
   using Strings for uint256;
   using Strings for uint16;
 
@@ -37,7 +37,7 @@ abstract contract ProviderToken3 is ERC721AP2P {
   // To be specified by the concrete contract
   string public description; 
   uint public mintPrice; 
-  uint public mintLimit; 
+  uint internal _mintLimit; // with a virtual getter
 
   IAssetProvider public immutable assetProvider;
 
@@ -45,7 +45,7 @@ abstract contract ProviderToken3 is ERC721AP2P {
     IAssetProvider _assetProvider,
     string memory _title,
     string memory _shortTitle
-  ) ERC721A(_title, _shortTitle)  {
+  ) ERC721(_title, _shortTitle)  {
     assetProvider = _assetProvider;
   }
 
@@ -58,7 +58,11 @@ abstract contract ProviderToken3 is ERC721AP2P {
   }
 
   function setMintLimit(uint256 _limit) external onlyOwner {
-    mintLimit = _limit;
+    _mintLimit = _limit;
+  }
+
+  function mintLimit() public view virtual returns(uint256) {
+    return _mintLimit;
   }
 
   string constant SVGHeader = '<svg viewBox="0 0 1024 1024'
@@ -84,7 +88,7 @@ abstract contract ProviderToken3 is ERC721AP2P {
     * @notice A distinct Uniform Resource Identifier (URI) for a given asset.
     * @dev See {IERC721Metadata-tokenURI}.
     */
-  function tokenURI(uint256 _tokenId) public view override(IERC721A,ERC721A) returns (string memory) {
+  function tokenURI(uint256 _tokenId) public view override returns (string memory) {
     require(_exists(_tokenId), 'ProviderToken.tokenURI: nonexistent token');
     bytes memory image = bytes(generateSVG(_tokenId));
 
@@ -117,7 +121,7 @@ abstract contract ProviderToken3 is ERC721AP2P {
    * 3. Call the processPayout method of the asset provider with appropriate value
    */
   function mint() public virtual payable returns(uint256 tokenId) {
-    require(nextTokenId < mintLimit, "Sold out");
+    require(nextTokenId < mintLimit(), "Sold out");
     tokenId = nextTokenId++; 
     _safeMint(msg.sender, tokenId);
   }
@@ -130,9 +134,9 @@ abstract contract ProviderToken3 is ERC721AP2P {
     return mintPrice;
   }
 
-//   function totalSupply() public view returns (uint256) {
-//     return nextTokenId;
-//   }
+  function totalSupply() public view returns (uint256) {
+    return nextTokenId;
+  }
 
   function generateTraits(uint256 _tokenId) internal view returns (bytes memory traits) {
     traits = bytes(assetProvider.generateTraits(_tokenId));

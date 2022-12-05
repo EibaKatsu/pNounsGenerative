@@ -1,35 +1,36 @@
 import { ethers, network } from "hardhat";
 import { writeFile } from "fs";
-import { addresses as addresses2 } from "../../src/utils/addresses";
-
-const contractSchemes = addresses2.colorSchemes[network.name];
 
 import addresses from '@nouns/sdk/dist/contract/addresses.json';
 
-const nounsDescriptor:string = (network.name == "goerli") ?
+const nounsDescriptorAddress:string = (network.name == "goerli") ?
   addresses[5].nounsDescriptor: addresses[1].nounsDescriptor;
-const nounsToken:string = (network.name == "goerli") ?
+const nounsTokenAddress:string = (network.name == "goerli") ?
   addresses[5].nounsToken: addresses[1].nounsToken;
 
-console.log("nounsDescriptor", nounsDescriptor);
+console.log("nounsDescriptor", nounsDescriptorAddress);
+console.log("nounsToken", nounsTokenAddress);
 
 async function main() {
+  const nounsToken = await ethers.getContractAt("NounsToken", nounsTokenAddress);
+  const nounsDescriptor = await ethers.getContractAt("INounsDescriptor", nounsDescriptorAddress);
+
+  const seeds = await nounsToken.functions.seeds(0);
+  console.log("seeds0", seeds);
+  const svg = await nounsDescriptor.generateSVGImage(seeds);
+  console.log(svg);
+
   const factory = await ethers.getContractFactory("NounsAssetProvider");
-  const contractProvider = await factory.deploy(nounsToken, nounsDescriptor);
+  const contractProvider = await factory.deploy(nounsTokenAddress, nounsDescriptorAddress);
   await contractProvider.deployed();
   console.log(`      provider="${contractProvider.address}"`);
 
-/*  
-  const factoryArt = await ethers.getContractFactory("MatrixProvider");
-  const contractArt = await factoryArt.deploy(contractProvider.address, contractSchemes, 12, "nounsArt", "Nouns Art");
-  await contractArt.deployed();
-  console.log(`      bitcoinArt="${contractArt.address}"`);  
-*/
   const addresses = `export const addresses = {\n`
     + `  providerAddress:"${contractProvider.address}",\n`
-//    + `  nounsArt:"${contractArt.address}",\n`
     + `}\n`;
-  await writeFile(`../src/utils/addresses/nouns_${network.name}.ts`, addresses, ()=>{});  
+  await writeFile(`../src/utils/addresses/nouns_${network.name}.ts`, addresses, ()=>{});
+
+  console.log(`npx hardhat verify ${contractProvider.address} ${nounsTokenAddress} ${nounsDescriptorAddress} --network ${network.name}`);
 }
 
 main().catch((error) => {

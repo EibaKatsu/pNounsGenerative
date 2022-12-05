@@ -12,6 +12,7 @@ import { addresses as sample_goerli } from "./addresses/sample_goerli";
 import { addresses as sample_localhost } from "./addresses/sample_localhost";
 import { addresses as nouns_goerli } from "./addresses/nouns_goerli";
 import { addresses as nouns_localhost } from "./addresses/nouns_localhost";
+import { addresses as nouns_mainnet } from "./addresses/nouns_mainnet";
 import { addresses as store_goerli } from "./addresses/addresses_goerli";
 import { addresses as store_localhost } from "./addresses/addresses_localhost";
 import { addresses as store_mainnet } from "./addresses/addresses_mainnet";
@@ -21,6 +22,10 @@ import { addresses as bitcoin_mainnet } from "./addresses/bitcoin_mainnet";
 import { addresses as reddit_goerli } from "./addresses/reddit_goerli";
 import { addresses as dotNouns_goerli } from "./addresses/dotNouns_goerli";
 import { addresses as dotNouns_localhost } from "./addresses/dotNouns_localhost";
+import { addresses as dotNouns_mainnet } from "./addresses/dotNouns_mainnet";
+import { addresses as dotNounsToken_localhost } from "./addresses/dotNounsToken_localhost";
+import { addresses as dotNounsToken_goerli } from "./addresses/dotNounsToken_goerli";
+import { addresses as dotNounsToken_mainnet } from "./addresses/dotNounsToken_mainnet";
 import { addresses as lilnouns_goerli } from "./addresses/lilnouns_goerli";
 import { addresses as circles_localhost } from "./addresses/circles_localhost";
 import { addresses as star_localhost } from "./addresses/star_localhost";
@@ -49,12 +54,13 @@ import { addresses as alphatoken_mainnet } from "./addresses/alphatoken_mainnet"
 import { addresses as dynamic_mumbai } from "./addresses/dynamic_mumbai";
 import { addresses as dynamic_mainnet } from "./addresses/dynamic_mainnet";
 import { addresses as dynamic_goerli } from "./addresses/dynamic_goerli";
+import { addresses as dynamic_localhost } from "./addresses/dynamic_localhost";
 
 export const addresses: any = {
   svgHelper: {
     goerli: splatter_goerli.svgHelperAddress,
     mumbai: color_mumbai.svgHelper,
-    localhost: color_localhost.svgHelper,
+    localhost: splatter_mainnet.svgHelperAddress, // deployed
     mainnet: splatter_mainnet.svgHelperAddress,
   },
   splatter: {
@@ -92,6 +98,7 @@ export const addresses: any = {
   nouns: {
     goerli: nouns_goerli.providerAddress,
     localhost: nouns_localhost.providerAddress,
+    mainnet: nouns_mainnet.providerAddress,
   },
   /*
   nounsArt: {
@@ -114,7 +121,7 @@ export const addresses: any = {
   },
   bitcoinToken: {
     goerli: bitcoin_goerli.bitcoinToken,
-    localhost: bitcoin_localhost.bitcoinToken,
+    // localhost: bitcoin_localhost.bitcoinToken,
     mainnet: bitcoin_mainnet.bitcoinToken,
   },
   assetStoreProvider: {
@@ -145,11 +152,12 @@ export const addresses: any = {
   dotNouns: {
     goerli: dotNouns_goerli.dotNounsArt,
     localhost: dotNouns_localhost.dotNounsArt,
-    mainnet: dotNouns_goerli.dotNounsArt, // HACK
+    mainnet: dotNouns_mainnet.dotNounsArt,
   },
   dotNounsToken: {
-    localhost: dotNouns_localhost.dotNounsToken,
-    goerli: dotNouns_goerli.dotNounsToken,
+    localhost: dotNounsToken_localhost.dotNounsToken,
+    goerli: dotNounsToken_goerli.dotNounsToken,
+    mainnet: dotNounsToken_mainnet.dotNounsToken,
   },
   lilnouns: {
     goerli: lilnouns_goerli.providerAddress,
@@ -207,7 +215,7 @@ export const addresses: any = {
   },
   dynamic: {
     mumbai: dynamic_mumbai.tokenGate,
-    localhost: dynamic_mumbai.tokenGate, // already deployed on mainnet!
+    localhost: dynamic_mainnet.tokenGate, // already deployed on mainnet!
     mainnet: dynamic_mainnet.tokenGate,
     goerli: dynamic_goerli.tokenGate,
   }
