@@ -16,7 +16,7 @@ contract pNounsContractFilter is ProviderToken3, AccessControlEnumerable {
     // address public admin; // コントラクト管理者。オーナーか管理者がset系メソッドを実行可能
 
     IContractAllowListProxy public cal;
-    uint256 public calLevel = 0;
+    uint256 public calLevel = 1;
 
     // uint256 constant unixtime_20230101 = 1672498800;
 
@@ -117,7 +117,7 @@ contract pNounsContractFilter is ProviderToken3, AccessControlEnumerable {
         if(calLevel == 0){
             revert("cant trade in marcket places");
         }
-        
+
         if (address(cal) != address(0)) {
             require(cal.isAllowed(to, calLevel) == true, "address no list");
         }
