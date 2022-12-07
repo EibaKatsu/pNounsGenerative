@@ -578,6 +578,35 @@ describe("pNounsToken adminMint", function () {
 
 });
 
+describe("Support Interfaces Test", function () {
+  const INTERFACE_IDS = {
+    ERC165: "0x01ffc9a7",
+    ERC721: "0x80ac58cd",
+    ERC721Metadata: "0x5b5e139f",
+    ERC721TokenReceiver: "0x150b7a02",
+    ERC721Enumerable: "0x780e9d63",
+    AccessControl: "0x7965db0b",
+    ERC2981: "0x2a55205a",
+  };
+
+  it("ERC165", async function () {
+    expect(await token.supportsInterface(INTERFACE_IDS.ERC165)).to.be.true;
+  });
+  it("ERC721", async function () {
+    expect(await token.supportsInterface(INTERFACE_IDS.ERC721)).to.be.true;
+  });
+  it("ERC721Metadata", async function () {
+    expect(await token.supportsInterface(INTERFACE_IDS.ERC721Metadata)).to
+      .be.true;
+  });
+  it("AccessControl", async function () {
+    expect(await token.supportsInterface(INTERFACE_IDS.AccessControl)).to.be
+      .true;
+  });
+  it("ERC2981", async function () {
+    expect(await token.supportsInterface(INTERFACE_IDS.ERC2981)).to.be.false;
+  });
+});
 
 /**
  * https://github.com/Lavulite/ERC721MultiSale/blob/main/utils/merkletree.ts より

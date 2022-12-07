@@ -130,8 +130,8 @@ contract pNounsContractFilter is ProviderTokenA1, AccessControlEnumerable {
         returns (bool)
     {
         return
-            interfaceId == type(AccessControlEnumerable).interfaceId ||
-            interfaceId == type(AccessControl).interfaceId ||
+            interfaceId == type(IAccessControlEnumerable).interfaceId ||
+            interfaceId == type(IAccessControl).interfaceId ||
             ERC721A.supportsInterface(interfaceId);
     }
 }
