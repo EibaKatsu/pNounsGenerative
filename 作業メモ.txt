@@ -105,3 +105,17 @@ https://solidity-jp.readthedocs.io/ja/latest/common-patterns.html
 
 # macOSバージョンアップ後 
 xcode-select --install
+
+# Remix連携
+Ethereum Remix Pluginから、Run&Deply → Activate → Connect Remix を選択
+https://remix.ethereum.org　を開く
+Workspaces で localhostを選択
+pNounsToken.solを開く
+コンパイルメニューを開く
+    AdvancedConfigurations で Enable optimization チェック、値を500(仮)にする
+    コンパイラバージョンを 0.8.14 にする
+    →コンパイルOKとなることを確認
+デプロイメニューを開く
+    _ASSETPROVIDER : 0x353c09d83CCCCD5F9e5236a4fD2e1936EDBAdD5b
+    開発用Gnosis : 0x6Be0E4e7798430d92FE5e504B77F02C647D3eD23
+    Administrators : ["0x6Be0E4e7798430d92FE5e504B77F02C647D3eD23"]
