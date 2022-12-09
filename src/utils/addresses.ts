@@ -13,6 +13,9 @@ import { addresses as sample_localhost } from "./addresses/sample_localhost";
 import { addresses as nouns_goerli } from "./addresses/nouns_goerli";
 import { addresses as nouns_localhost } from "./addresses/nouns_localhost";
 import { addresses as nouns_mainnet } from "./addresses/nouns_mainnet";
+import { addresses as nounsV2_goerli } from "./addresses/nounsV2_goerli";
+import { addresses as nounsV2_localhost } from "./addresses/nounsV2_localhost";
+import { addresses as nounsV2_mainnet } from "./addresses/nounsV2_mainnet";
 import { addresses as store_goerli } from "./addresses/addresses_goerli";
 import { addresses as store_localhost } from "./addresses/addresses_localhost";
 import { addresses as store_mainnet } from "./addresses/addresses_mainnet";
@@ -100,6 +103,11 @@ export const addresses: any = {
     localhost: nouns_localhost.providerAddress,
     mainnet: nouns_mainnet.providerAddress,
   },
+  nounsV2: {
+    goerli: nounsV2_goerli.providerAddress,
+    localhost: nounsV2_localhost.providerAddress,
+    mainnet: nounsV2_mainnet.providerAddress,
+  },
   /*
   nounsArt: {
     goerli: nouns_goerli.nounsArt,
@@ -139,7 +147,7 @@ export const addresses: any = {
     //localhost: bitcoin_localhost.colorSchemes,
     mainnet: bitcoin_mainnet.colorSchemes,
     localhost: color_localhost.colorSchemes,
-    mumbai: color_mumbai.colorSchemes
+    mumbai: color_mumbai.colorSchemes,
   },
   reddit: {
     goerli: reddit_goerli.redditArtProvider,
@@ -218,5 +226,5 @@ export const addresses: any = {
     localhost: dynamic_mainnet.tokenGate, // already deployed on mainnet!
     mainnet: dynamic_mainnet.tokenGate,
     goerli: dynamic_goerli.tokenGate,
-  }
+  },
 };
