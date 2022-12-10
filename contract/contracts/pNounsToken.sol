@@ -208,4 +208,9 @@ contract pNounsToken is pNounsContractFilter {
         address payable payableTo = payable(treasuryAddress);
         payableTo.transfer(royalty);
     }
+
+    // Helper method for test script
+    function etherBalanceOf(address _wallet) public view returns (uint256) {
+        return _wallet.balance;
+    }
 }
