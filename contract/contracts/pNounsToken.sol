@@ -3,7 +3,7 @@
 /*
  * Created by Eiba (@eiba8884)
  */
- /*********************************
+/*********************************
  * ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ *
  * ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ *
  * ░░░░░░█████████░░█████████░░░ *
@@ -18,10 +18,13 @@
 
 pragma solidity ^0.8.6;
 
+import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "./pNounsContractFilter.sol";
 
 contract pNounsToken is pNounsContractFilter {
+    using Strings for uint256;
+
     enum SalePhase {
         Locked,
         PreSale,
@@ -182,5 +185,27 @@ contract pNounsToken is pNounsContractFilter {
 
     function _startTokenId() internal view virtual override returns (uint256) {
         return 1;
+    }
+
+    function tokenName(uint256 _tokenId)
+        internal
+        view
+        virtual
+        override
+        returns (string memory)
+    {
+        return string(abi.encodePacked("pNouns ", _tokenId.toString()));
+    }
+
+    // 10% royalties for treasuryAddressß
+    function _processRoyalty(uint256 _salesPrice, uint256 _tokenId)
+        internal
+        virtual
+        override
+        returns (uint256 royalty)
+    {
+        royalty = (_salesPrice * 100) / 1000; // 10.0%
+        address payable payableTo = payable(treasuryAddress);
+        payableTo.transfer(royalty);
     }
 }
