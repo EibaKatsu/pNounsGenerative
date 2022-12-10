@@ -502,52 +502,52 @@ describe("pNounsToken adminMint", function () {
     const [count4] = await token.functions.balanceOf(unauthorized.address);
     const [count5] = await token.functions.balanceOf(treasury.address);
     const [count6] = await token.functions.balanceOf(administrator.address);
-    
+
 
     await token.connect(administrator).functions.adminMint(
       [owner.address, authorized.address, authorized2.address, unauthorized.address, treasury.address, administrator.address],
-      [1,2,3,4,5,6]
-      );
+      [1, 2, 3, 4, 5, 6]
+    );
 
-      const [count1a] = await token.functions.balanceOf(owner.address);
-      const [count2a] = await token.functions.balanceOf(authorized.address);
-      const [count3a] = await token.functions.balanceOf(authorized2.address);
-      const [count4a] = await token.functions.balanceOf(unauthorized.address);
-      const [count5a] = await token.functions.balanceOf(treasury.address);
-      const [count6a] = await token.functions.balanceOf(administrator.address);
-      
-    expect(count1a.toNumber()).equal(count1.toNumber()+1);
-    expect(count2a.toNumber()).equal(count2.toNumber()+2);
-    expect(count3a.toNumber()).equal(count3.toNumber()+3);
-    expect(count4a.toNumber()).equal(count4.toNumber()+4);
-    expect(count5a.toNumber()).equal(count5.toNumber()+5);
-    expect(count6a.toNumber()).equal(count6.toNumber()+6);
+    const [count1a] = await token.functions.balanceOf(owner.address);
+    const [count2a] = await token.functions.balanceOf(authorized.address);
+    const [count3a] = await token.functions.balanceOf(authorized2.address);
+    const [count4a] = await token.functions.balanceOf(unauthorized.address);
+    const [count5a] = await token.functions.balanceOf(treasury.address);
+    const [count6a] = await token.functions.balanceOf(administrator.address);
+
+    expect(count1a.toNumber()).equal(count1.toNumber() + 1);
+    expect(count2a.toNumber()).equal(count2.toNumber() + 2);
+    expect(count3a.toNumber()).equal(count3.toNumber() + 3);
+    expect(count4a.toNumber()).equal(count4.toNumber() + 4);
+    expect(count5a.toNumber()).equal(count5.toNumber() + 5);
+    expect(count6a.toNumber()).equal(count6.toNumber() + 6);
   });
 
   it("adminMint args error", async function () {
     // 引数の数が違う
-    await expect( token.connect(administrator).functions.adminMint(
+    await expect(token.connect(administrator).functions.adminMint(
       [owner.address, authorized.address, authorized2.address, unauthorized.address, treasury.address, administrator.address],
-      [1,2,3,4,5]
-      ))
+      [1, 2, 3, 4, 5]
+    ))
       .to.be.revertedWith("args error");
   });
 
   it("adminMint mintAmount is zero", async function () {
     // 引数の数が違う
-    await expect( token.connect(administrator).functions.adminMint(
+    await expect(token.connect(administrator).functions.adminMint(
       [owner.address, authorized.address, authorized2.address, unauthorized.address, treasury.address, administrator.address],
-      [1,2,0,4,5,6]
-      ))
+      [1, 2, 0, 4, 5, 6]
+    ))
       .to.be.revertedWith("mintAmount is zero");
   });
 
   it("adminMint exceed limitAdminMint", async function () {
     // 合計1００以上のミント
-    await expect( token.connect(administrator).functions.adminMint(
+    await expect(token.connect(administrator).functions.adminMint(
       [owner.address, authorized.address, authorized2.address, unauthorized.address, treasury.address, administrator.address],
-      [10,10,10,10,50,11]
-      ))
+      [10, 10, 10, 10, 50, 11]
+    ))
       .to.be.revertedWith("exceed limitAdminMint");
   });
 
@@ -559,24 +559,43 @@ describe("pNounsToken adminMint", function () {
     expect(mintLimit2.toNumber()).equal(60);
 
     // max以上のミント
-    await expect( token.connect(administrator).functions.adminMint(
+    await expect(token.connect(administrator).functions.adminMint(
       [owner.address, authorized.address, authorized2.address, unauthorized.address, treasury.address, administrator.address],
-      [10,10,10,10,10,11]
-      ))
+      [10, 10, 10, 10, 10, 11]
+    ))
       .to.be.revertedWith("exceed mintLimit");
   });
 
   it("adminMint not admin", async function () {
-    
+
     // unauthorized で実行
-    await expect( token.connect(unauthorized).functions.adminMint(
+    await expect(token.connect(unauthorized).functions.adminMint(
       [owner.address, authorized.address, authorized2.address, unauthorized.address, treasury.address, administrator.address],
-      [10,10,10,10,10,11]
-      ))
+      [10, 10, 10, 10, 10, 11]
+    ))
       .to.be.revertedWith("caller is not the admin");
   });
 
 });
+describe("owner transfer", function () {
+  it("owner transfer", async function () {
+
+    // オーナーの変更
+    await token.functions.transferOwnership(treasury.address);
+
+    // 旧オーナーで実行
+    await expect(token.connect(owner).functions.setPhase(1, 1))
+      .to.be.revertedWith("caller is not the admin");
+
+    // 新オーナーで実行
+    await token.connect(treasury).functions.setPhase(1, 1);
+    const [phase] = await token.functions.phase();
+    expect(phase).equal(1);
+    const [purchaseUnit] = await token.functions.purchaseUnit();
+    expect(purchaseUnit).equal(1)
+  })
+});
+
 
 describe("Support Interfaces Test", function () {
   const INTERFACE_IDS = {

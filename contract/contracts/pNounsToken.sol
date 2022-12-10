@@ -3,6 +3,18 @@
 /*
  * Created by Eiba (@eiba8884)
  */
+ /*********************************
+ * ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ *
+ * ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ *
+ * ░░░░░░█████████░░█████████░░░ *
+ * ░░░░░░██░░░████░░██░░░████░░░ *
+ * ░░██████░░░████████░░░████░░░ *
+ * ░░██░░██░░░████░░██░░░████░░░ *
+ * ░░██░░██░░░████░░██░░░████░░░ *
+ * ░░░░░░█████████░░█████████░░░ *
+ * ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ *
+ * ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ *
+ *********************************/
 
 pragma solidity ^0.8.6;
 
@@ -42,9 +54,6 @@ contract pNounsToken is pNounsContractFilter {
         mintLimit = 2100;
         treasuryAddress = _treasuryAddress;
 
-        // for (uint256 i; i < mintForTreasuryAddress; i++) {
-        //     _safeMint(treasuryAddress, nextTokenId+i);
-        // }
         _safeMint(treasuryAddress, mintForTreasuryAddress);
         nextTokenId += mintForTreasuryAddress;
 
@@ -133,7 +142,7 @@ contract pNounsToken is pNounsContractFilter {
         mintCount[msg.sender] += _mintAmount;
     }
 
-    function withdraw() external onlyAdminOrOwner {
+    function withdraw() external payable onlyAdminOrOwner {
         require(
             treasuryAddress != address(0),
             "treasuryAddress shouldn't be 0"

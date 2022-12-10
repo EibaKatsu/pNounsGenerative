@@ -3,6 +3,18 @@
 /*
  * Created by Eiba (@eiba8884)
  */
+ /*********************************
+ * ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ *
+ * ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ *
+ * ░░░░░░█████████░░█████████░░░ *
+ * ░░░░░░██░░░████░░██░░░████░░░ *
+ * ░░██████░░░████████░░░████░░░ *
+ * ░░██░░██░░░████░░██░░░████░░░ *
+ * ░░██░░██░░░████░░██░░░████░░░ *
+ * ░░░░░░█████████░░█████████░░░ *
+ * ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ *
+ * ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ *
+ *********************************/
 
 pragma solidity ^0.8.6;
 
@@ -47,7 +59,7 @@ contract pNounsContractFilter is ProviderTokenA1, AccessControlEnumerable {
     }
 
     ////////// onlyOwner functions start //////////
-    function setAdminRole(address[] memory _administrators) external onlyOwner {
+    function setAdminRole(address[] memory _administrators) external onlyAdminOrOwner {
         for (uint256 i = 0; i < _administrators.length; i++) {
             _grantRole(CONTRACT_ADMIN, _administrators[i]);
         }
@@ -55,7 +67,7 @@ contract pNounsContractFilter is ProviderTokenA1, AccessControlEnumerable {
 
     function revokeAdminRole(address[] memory _administrators)
         external
-        onlyOwner
+        onlyAdminOrOwner
     {
         for (uint256 i = 0; i < _administrators.length; i++) {
             _revokeRole(CONTRACT_ADMIN, _administrators[i]);
