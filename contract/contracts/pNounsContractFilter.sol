@@ -126,7 +126,7 @@ contract pNounsContractFilter is ProviderTokenA1, AccessControlEnumerable {
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(AccessControlEnumerable, ERC721A)
+        override(AccessControlEnumerable, ERC721AP2P)
         returns (bool)
     {
         return
