@@ -135,6 +135,10 @@ contract pNounsContractFilter is ProviderTokenA1, AccessControlEnumerable {
         super.approve(to, tokenId);
     }
 
+    function isApprovedForAll(address owner, address operator) public view virtual override returns (bool) {
+        return super.isApprovedForAll(owner,operator);
+    }
+
     function supportsInterface(bytes4 interfaceId)
         public
         view
