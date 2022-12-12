@@ -91,6 +91,10 @@ describe("P2P", function () {
     expect(result.toNumber()).equal(price);
   });
   it("Purchase by user2", async function() {
+
+    // pNounsMarketplaceに user2 を追加
+    await token.setPNounsMarketplace(user2.address, true);
+
     await expect(token2.purchase(tokenId0, user2.address, zeroAddress)).revertedWith('Not enough fund');
 
     balance1 = await token.etherBalanceOf(user1.address);
@@ -102,9 +106,9 @@ describe("P2P", function () {
     expect(result).equal(user2.address);
 
     balance = await token.etherBalanceOf(user1.address);
-    expect(balance.sub(balance1)).equal(price.div(20).mul(19)); // 95%
+    expect(balance.sub(balance1)).equal(price.div(10).mul(9)); // 90%
     balance = await token.etherBalanceOf(artist.address);
-    expect(balance.sub(balanceA)).equal(price.div(20).mul(1)); // 5%
+    expect(balance.sub(balanceA)).equal(0); // 0%
   });
   it("Attempt to buy by user3", async function() {
     await expect(token3.purchase(0, user2.address, zeroAddress, {value: price})).revertedWith("Token is not on sale");

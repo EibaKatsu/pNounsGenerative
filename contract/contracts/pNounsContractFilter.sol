@@ -3,7 +3,7 @@
 /*
  * Created by Eiba (@eiba8884)
  */
- /*********************************
+/*********************************
  * ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ *
  * ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ *
  * ░░░░░░█████████░░█████████░░░ *
@@ -28,6 +28,8 @@ contract pNounsContractFilter is ProviderTokenA1, AccessControlEnumerable {
 
     IContractAllowListProxy public cal;
     uint256 public calLevel = 1;
+
+    mapping(address => bool) public pNounsMarketplaces; // approveを許可するコントラクトアドレス
 
     // uint256 constant unixtime_20230101 = 1672498800;
 
@@ -59,7 +61,10 @@ contract pNounsContractFilter is ProviderTokenA1, AccessControlEnumerable {
     }
 
     ////////// onlyOwner functions start //////////
-    function setAdminRole(address[] memory _administrators) external onlyAdminOrOwner {
+    function setAdminRole(address[] memory _administrators)
+        external
+        onlyAdminOrOwner
+    {
         for (uint256 i = 0; i < _administrators.length; i++) {
             _grantRole(CONTRACT_ADMIN, _administrators[i]);
         }
@@ -135,8 +140,27 @@ contract pNounsContractFilter is ProviderTokenA1, AccessControlEnumerable {
         super.approve(to, tokenId);
     }
 
-    function isApprovedForAll(address owner, address operator) public view virtual override returns (bool) {
-        return super.isApprovedForAll(owner,operator);
+    function setPNounsMarketplace(address _marketplace, bool _allow)
+        public
+        onlyAdminOrOwner
+    {
+        pNounsMarketplaces[_marketplace] = _allow;
+    }
+
+    function isApprovedForAll(address owner, address operator)
+        public
+        view
+        virtual
+        override
+        returns (bool)
+    {
+
+        // 登録済みアドレスはOK
+        if(pNounsMarketplaces[operator]){
+            return true;
+        }
+
+        return super.isApprovedForAll(owner, operator);
     }
 
     function supportsInterface(bytes4 interfaceId)
