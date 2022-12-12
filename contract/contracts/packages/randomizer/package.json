@@ -1,6 +1,6 @@
 {
   "name": "randomizer.sol",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Deterministic pseudo random generator",
   "main": "index.js",
   "scripts": {
@@ -19,5 +19,5 @@
   "bugs": {
     "url": "https://github.com/Cryptocoders-wtf/generative/issues"
   },
-  "homepage": "https://github.com/Cryptocoders-wtf/generative#readme"
+  "homepage": "https://github.com/Cryptocoders-wtf/generative/tree/main/contract/contracts/packages/randomizer#readme"
 }

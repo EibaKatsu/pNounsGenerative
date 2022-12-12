@@ -34,3 +34,30 @@ npm install
 ```
 npx hardhat run ./scripts/deploy_splatter.ts
 ```
+
+### Quick Link
+
+[Assetstore Contract for AssetStoreProvider.sol](https://github.com/Cryptocoders-wtf/assetstore-contract/)
+
+[Fully-On-Chain.sol](https://github.com/Cryptocoders-wtf/generative/tree/main/contract/contracts/packages/graphics)
+
+[Randomizer.sol](https://github.com/Cryptocoders-wtf/generative/tree/main/contract/contracts/packages/randomizer)
+
+[trigonometry.sol](https://github.com/Cryptocoders-wtf/generative/tree/main/contract/contracts/packages/trigonometry)
+
+[assetprovider.sol](https://github.com/Cryptocoders-wtf/generative/tree/main/contract/contracts/packages/assetProvider)
+
+[bytes-array.sol](https://github.com/Cryptocoders-wtf/generative/tree/main/contract/contracts/packages/bytesarray)
+
+[erc721p2p](https://github.com/Cryptocoders-wtf/generative/tree/main/contract/contracts/packages/ERC721P2P)
+
+### Related Web site
+
+[Fully On-Chain Generative Art](https://fullyonchain.xyz/)
+
+[On-chain Asset Store](https://assetstore.wtf/)
+
+
+
+
+
