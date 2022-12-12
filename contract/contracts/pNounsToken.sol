@@ -194,7 +194,7 @@ contract pNounsToken is pNounsContractFilter {
         override
         returns (string memory)
     {
-        return string(abi.encodePacked("pNouns ", _tokenId.toString()));
+        return string(abi.encodePacked("pNouns #", _tokenId.toString()));
     }
 
     // 10% royalties for treasuryAddressß
