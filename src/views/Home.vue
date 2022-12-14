@@ -8,11 +8,44 @@
     </p>
     <p class="mb-2">
       Unlike images stored on HTTP servers or IPFS, on-chain generative arts are
-      truly decentralized and composable (i.e., re-use image from other smart
-      contracts). It can even generate revenue autonomously (we will launch a
+      truly decentralized and composable (i.e., it is possible re-use and remix images 
+      from other smart contracts).
+      It can even generate revenue autonomously (we will launch a
       <b>decentralized autonomous marketplace</b> for generative arts soon).
     </p>
-    <p class="mb-2">
+    <p class="mb-2" id="series">
+      We have released four <b>Fully On-chain Generative NFT collections</b> so far 
+      (please click the iamge to see the secondary market on OpenSea).
+    <ul>
+
+        <a
+        href="https://opensea.io/collection/on-chain-splatter"
+        class="underline"
+        target="_blank"
+        ><img class="w-32 inline-block mr-2" src="@/assets/splatterToken.svg" /></a
+      >
+      <a
+        href="https://opensea.io/collection/on-chain-bitcoin-art"
+        class="underline"
+        target="_blank"
+        ><img class="w-32 inline-block mr-2" src="@/assets/bitcoinToken.svg" /></a
+      >
+      <a
+        href="https://opensea.io/collection/on-chain-alphabet"
+        class="underline"
+        target="_blank"
+        ><img class="w-32 inline-block mr-2" src="@/assets/alphabetToken.svg" /></a
+      >
+      <a
+        href="https://opensea.io/collection/dot-nouns"
+        class="underline"
+        target="_blank"
+        ><img class="w-32 inline-block mr-2" src="@/assets/dotNounsToken.svg" /></a
+      >
+    </ul>
+
+    </p>
+    <p class="mt-2 mb-2">
       Traditional on-chain NFTs, such as Nouns, had very poor graphics (see
       below), and this project was born to solve this problem.
     </p>
