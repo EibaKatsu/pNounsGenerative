@@ -96,18 +96,22 @@ describe("P2P", function () {
     await token.setPNounsMarketplace(user2.address, true);
 
     await expect(token2.purchase(tokenId0, user2.address, zeroAddress)).revertedWith('Not enough fund');
-
-    balance1 = await token.etherBalanceOf(user1.address);
-    balanceA = await token.etherBalanceOf(artist.address);
+    // provider.getBalance(address)
+    // balance1 = await token.etherBalanceOf(user1.address);
+    // balanceA = await token.etherBalanceOf(artist.address);
+    balance1 = await token.provider.getBalance(user1.address);
+    balanceA = await token.provider.getBalance(artist.address);
 
     tx = await token2.purchase(tokenId0, user2.address, zeroAddress, {value:price});
     await tx.wait();
     result = await token.ownerOf(tokenId0);
     expect(result).equal(user2.address);
 
-    balance = await token.etherBalanceOf(user1.address);
+    // balance = await token.etherBalanceOf(user1.address);
+    balance = await token.provider.getBalance(user1.address);
     expect(balance.sub(balance1)).equal(price.div(10).mul(9)); // 90%
-    balance = await token.etherBalanceOf(artist.address);
+    // balance = await token.etherBalanceOf(artist.address);
+    balance = await token.provider.getBalance(artist.address);
     expect(balance.sub(balanceA)).equal(0); // 0%
   });
   it("Attempt to buy by user3", async function() {
