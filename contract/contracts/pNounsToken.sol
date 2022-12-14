@@ -85,9 +85,9 @@ contract pNounsToken is pNounsContractFilter {
         // ミント処理
         for (uint256 i = 0; i < _to.length; i++) {
             _safeMint(_to[i], _num[i]);
-            nextTokenId += _num[i];
             mintCount[_to[i]] += _num[i];
         }
+        nextTokenId += mintTotal;
     }
 
     function mintPNouns(
@@ -199,7 +199,7 @@ contract pNounsToken is pNounsContractFilter {
     }
 
     // 10% royalties for treasuryAddressß
-    function _processRoyalty(uint256 _salesPrice, uint256 _tokenId)
+    function _processRoyalty(uint256 _salesPrice, uint256)
         internal
         virtual
         override

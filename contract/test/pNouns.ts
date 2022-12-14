@@ -496,6 +496,9 @@ describe("pNounsToken owner's mint", function () {
 describe("pNounsToken adminMint", function () {
 
   it("adminMint normal", async function () {
+
+    const [totalSupply] = await token.functions.totalSupply();
+
     const [count1] = await token.functions.balanceOf(owner.address);
     const [count2] = await token.functions.balanceOf(authorized.address);
     const [count3] = await token.functions.balanceOf(authorized2.address);
@@ -522,6 +525,10 @@ describe("pNounsToken adminMint", function () {
     expect(count4a.toNumber()).equal(count4.toNumber() + 4);
     expect(count5a.toNumber()).equal(count5.toNumber() + 5);
     expect(count6a.toNumber()).equal(count6.toNumber() + 6);
+
+    const [totalSupply2] = await token.functions.totalSupply();
+
+    expect(totalSupply2.toNumber()).equal(totalSupply.toNumber() + 1 + 2 + 3 + 4 + 5 + 6);
   });
 
   it("adminMint args error", async function () {
