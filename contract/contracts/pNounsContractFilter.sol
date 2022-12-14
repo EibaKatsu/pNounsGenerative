@@ -49,7 +49,7 @@ contract pNounsContractFilter is ProviderTokenA1, AccessControlEnumerable {
     ////////// modifiers //////////
     modifier onlyAdminOrOwner() {
         require(
-            owner() == _msgSender() || hasRole(CONTRACT_ADMIN, _msgSender()),
+            hasAdminOrOwner(),
             "caller is not the admin"
         );
         _;
