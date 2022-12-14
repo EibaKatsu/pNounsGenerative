@@ -73,13 +73,14 @@ contract pNounsToken is pNounsContractFilter {
         // 引数配列の整合性チェック
         require(_to.length == _num.length, "args error");
 
-        // ミント数合計が最大ミント数を超えていないか
         for (uint256 i = 0; i < _num.length; i++) {
             mintTotal += _num[i];
             require(_num[i] > 0, "mintAmount is zero");
-            require(mintTotal <= limitAdminMint, "exceed limitAdminMint");
-            require(totalSupply() + mintTotal <= mintLimit, "exceed mintLimit");
         }
+
+        // ミント数合計が最大ミント数を超えていないか
+        require(mintTotal <= limitAdminMint, "exceed limitAdminMint");
+        require(totalSupply() + mintTotal <= mintLimit, "exceed mintLimit");
 
         // ミント処理
         for (uint256 i = 0; i < _to.length; i++) {

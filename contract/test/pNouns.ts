@@ -534,7 +534,7 @@ describe("pNounsToken adminMint", function () {
   });
 
   it("adminMint mintAmount is zero", async function () {
-    // 引数の数が違う
+    // ミント数ゼロあり
     await expect(token.connect(administrator).functions.adminMint(
       [owner.address, authorized.address, authorized2.address, unauthorized.address, treasury.address, administrator.address],
       [1, 2, 0, 4, 5, 6]
