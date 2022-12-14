@@ -29,7 +29,7 @@ contract pNounsContractFilter is ProviderTokenA1, AccessControlEnumerable {
     IContractAllowListProxy public cal;
     uint256 public calLevel = 1;
 
-    mapping(address => bool) public pNounsMarketplaces; // approveを許可するコントラクトアドレス
+    mapping(address => bool) public isPNounsMarketplaces; // approveを許可するコントラクトアドレス
 
     // uint256 constant unixtime_20230101 = 1672498800;
 
@@ -144,7 +144,7 @@ contract pNounsContractFilter is ProviderTokenA1, AccessControlEnumerable {
         public
         onlyAdminOrOwner
     {
-        pNounsMarketplaces[_marketplace] = _allow;
+        isPNounsMarketplaces[_marketplace] = _allow;
     }
 
     function isApprovedForAll(address owner, address operator)
@@ -156,7 +156,7 @@ contract pNounsContractFilter is ProviderTokenA1, AccessControlEnumerable {
     {
 
         // 登録済みアドレスはOK
-        if(pNounsMarketplaces[operator]){
+        if(isPNounsMarketplaces[operator]){
             return true;
         }
 
