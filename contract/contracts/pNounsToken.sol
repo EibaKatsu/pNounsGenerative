@@ -34,7 +34,7 @@ contract pNounsToken is pNounsContractFilter {
     uint256 public purchaseUnit = 5; // 購入単位
 
     bytes32 public merkleRoot; // プレセールのマークルルート
-    address public treasuryAddress; // トレジャリーウォレット
+    address public treasuryAddress = 0x8AE80e0B44205904bE18869240c2eC62D2342785; // トレジャリーウォレット
     uint256 public maxMintPerAddress = 100; // 1人当たりの最大ミント数
     uint256 constant mintForTreasuryAddress = 100; // トレジャリーへの初回配布数
 
@@ -42,7 +42,6 @@ contract pNounsToken is pNounsContractFilter {
 
     constructor(
         IAssetProvider _assetProvider,
-        address _treasuryAddress,
         address[] memory _administrators
     )
         pNounsContractFilter(
@@ -55,7 +54,6 @@ contract pNounsToken is pNounsContractFilter {
         description = "This is the first NFT of pNouns project (https://pnouns.wtf/).";
         mintPrice = 0.05 ether;
         mintLimit = 2100;
-        treasuryAddress = _treasuryAddress;
 
         _safeMint(treasuryAddress, mintForTreasuryAddress);
         nextTokenId += mintForTreasuryAddress;
@@ -157,9 +155,10 @@ contract pNounsToken is pNounsContractFilter {
         require(sent, "failed to move fund to treasuryAddress contract");
     }
 
-    function setTreasuryAddress(address _treasury) external onlyAdminOrOwner {
-        treasuryAddress = _treasury;
-    }
+    /* treasuryAddress は non-upgradable */
+    // function setTreasuryAddress(address _treasury) external onlyAdminOrOwner {
+    //     treasuryAddress = _treasury;
+    // }
 
     function setPhase(SalePhase _phase, uint256 _purchaseUnit)
         external

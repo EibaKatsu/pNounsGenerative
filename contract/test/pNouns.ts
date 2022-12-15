@@ -31,7 +31,7 @@ before(async () => {
   await contractArt.deployed();
 
   const factoryToken = await ethers.getContractFactory("pNounsToken");
-  token = await factoryToken.deploy(contractArt.address, treasury.address, [administrator.address]);
+  token = await factoryToken.deploy(contractArt.address, [administrator.address]);
   await token.deployed();
 
 });
@@ -46,10 +46,10 @@ describe("pNounsToken constant values", function () {
     expect(result.tag).equal("splt1");
   });
   // デプロイ後のトレジャリーミント
-  it("treasury mint", async function () {
-    const [count1] = await token.functions.balanceOf(treasury.address);
-    expect(count1.toNumber()).equal(100);
-  });
+  // it("treasury mint", async function () {
+  //   const [count1] = await token.functions.balanceOf(treasury.address);
+  //   expect(count1.toNumber()).equal(100);
+  // });
   it("phase", async function () {
     await token.functions.setPhase(1, 5);
     const [phase] = await token.functions.phase();
@@ -94,11 +94,11 @@ describe("pNounsToken constant values", function () {
     expect(maxMintPerAddress2).equal(maxMintPerAddress / 2);
     await token.functions.setMaxMintPerAddress(100);
   });
-  it("treasuryAddress", async function () {
-    await token.functions.setTreasuryAddress(treasury.address);
-    const [treasury2] = await token.functions.treasuryAddress();
-    expect(treasury2).equal(treasury.address);
-  });
+  // it("treasuryAddress", async function () {
+  //   await token.functions.setTreasuryAddress(treasury.address);
+  //   const [treasury2] = await token.functions.treasuryAddress();
+  //   expect(treasury2).equal(treasury.address);
+  // });
 });
 
 describe("pNounsToken Presale mint", function () {
@@ -152,17 +152,17 @@ describe("pNounsToken Presale mint", function () {
     const [count2] = await token.functions.totalSupply();
     expect(count2.toNumber()).equal(Number(totalSupply) + 5);
 
-    // withdraw前
-    const balance = await token.provider.getBalance(token.address);
-    expect(balance).equal(mintPrice.mul(5));
-    const balanceOfTreasury = await token.provider.getBalance(treasury.address);
+    // // withdraw前
+    // const balance = await token.provider.getBalance(token.address);
+    // expect(balance).equal(mintPrice.mul(5));
+    // const balanceOfTreasury = await token.provider.getBalance(treasury.address);
 
-    // withdraw
-    await token.functions.withdraw();
+    // // withdraw
+    // await token.functions.withdraw();
 
-    // withdraw後
-    const balance2 = await token.provider.getBalance(treasury.address);
-    expect(balance2).equal(balanceOfTreasury.add(mintPrice.mul(5)));
+    // // withdraw後
+    // const balance2 = await token.provider.getBalance(treasury.address);
+    // expect(balance2).equal(balanceOfTreasury.add(mintPrice.mul(5)));
 
   });
 
@@ -194,17 +194,17 @@ describe("pNounsToken Presale mint", function () {
     const [count2] = await token.functions.totalSupply();
     expect(count2.toNumber()).equal(Number(totalSupply) + 5);
 
-    // withdraw前
-    const balance = await token.provider.getBalance(token.address);
-    expect(balance).equal(mintPrice.mul(5));
-    const balanceOfTreasury = await token.provider.getBalance(treasury.address);
+    // // withdraw前
+    // const balance = await token.provider.getBalance(token.address);
+    // expect(balance).equal(mintPrice.mul(5));
+    // const balanceOfTreasury = await token.provider.getBalance(treasury.address);
 
-    // withdraw
-    await token.functions.withdraw();
+    // // withdraw
+    // await token.functions.withdraw();
 
-    // withdraw後
-    const balance2 = await token.provider.getBalance(treasury.address);
-    expect(balance2).equal(balanceOfTreasury.add(mintPrice.mul(5)));
+    // // withdraw後
+    // const balance2 = await token.provider.getBalance(treasury.address);
+    // expect(balance2).equal(balanceOfTreasury.add(mintPrice.mul(5)));
 
   });
 
