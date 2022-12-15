@@ -34,7 +34,7 @@ contract pNounsToken is pNounsContractFilter {
     uint256 public purchaseUnit = 5; // 購入単位
 
     bytes32 public merkleRoot; // プレセールのマークルルート
-    address public treasuryAddress = 0x8AE80e0B44205904bE18869240c2eC62D2342785; // トレジャリーウォレット
+    address public constant treasuryAddress = 0x8AE80e0B44205904bE18869240c2eC62D2342785; // トレジャリーウォレット
     uint256 public maxMintPerAddress = 100; // 1人当たりの最大ミント数
     uint256 constant mintForTreasuryAddress = 100; // トレジャリーへの初回配布数
 
