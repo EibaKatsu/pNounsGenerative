@@ -29,3 +29,4 @@ pnpm-debug.log*
 pNounsToken_flat.sol
 scripts/etherscan/receiptStatus.ts
 scripts/etherscan/verify.ts
+.env

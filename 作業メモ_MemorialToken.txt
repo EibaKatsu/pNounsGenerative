@@ -1,0 +1,13 @@
+
+Goerli
+alphabetProvider :  0x5Cad7e6dFdC0a4Fbd6664aEA2CC100Bb8c915D77
+NounsProvider:      0x9385bA0ac58A29720Ff1a746f1CE60C6c7FfFA93
+
+MemorialPrivider: 0x6C80A7E7440E1022bFb4eb74193948aF4652B93f
+
+
+npm install nouns
+npm install ethersproject
+
+
+tsconfig
