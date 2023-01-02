@@ -2,9 +2,7 @@
 
 pragma solidity ^0.8.6;
 
-// import { Ownable } from '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
-// import '../packages/ERC721P2P/ERC721AP2P.sol';
 import { Base64 } from 'base64-sol/base64.sol';
 import '@openzeppelin/contracts/utils/Strings.sol';
 import 'assetprovider.sol/IAssetProvider.sol';
@@ -12,14 +10,9 @@ import '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 
 /**
- * ProviderToken is an abstract implentation of ERC721, which is built on top of an asset provider.
+ * ProviderSBT is an abstract implentation of ERC721, which is built on top of an asset provider.
  * The specified asset provider is responsible in providing images for NFTs in SVG format,
  * which turns them into fully on-chain NFTs.
- *
- * When implementing the mint method, and it should call processPayout method of the asset provider like this:
- *
- *   provider.processPayout{value:msg.value}(assetId)
- *
  */
 abstract contract ProviderSBT is ERC721, AccessControlEnumerable, Ownable {
   using Strings for uint256;

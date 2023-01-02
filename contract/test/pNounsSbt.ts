@@ -100,15 +100,29 @@ it("normal pattern", async function () {
 
   // setApproveForAll
   await expect(token.connect(authorized).functions.setApprovalForAll(unauthorized.address, true))
-  .to.be.revertedWith("This token is SBT.");
+    .to.be.revertedWith("This token is SBT.");
 
   // approve
   await expect(token.connect(authorized).functions.approve(unauthorized.address, 101))
-  .to.be.revertedWith("This token is SBT.");
+    .to.be.revertedWith("This token is SBT.");
 
   // transfer
   await expect(token.connect(authorized).functions.transferFrom(authorized.address, unauthorized.address, 101))
-  .to.be.revertedWith("This token is SBT, so this can not transfer.");
+    .to.be.revertedWith("This token is SBT, so this can not transfer.");
+
+  // treasuryをセット
+  await token.functions.setTreasuryAddress(treasury.address);
+  // withdraw前
+  const balance = await token.provider.getBalance(token.address);
+  expect(balance).equal(mintPrice.mul(1));
+  const balanceOfTreasury = await token.provider.getBalance(treasury.address);
+
+  // withdraw
+  await token.functions.withdraw();
+
+  // withdraw後
+  const balance2 = await token.provider.getBalance(treasury.address);
+  expect(balance2).equal(balanceOfTreasury.add(mintPrice.mul(1)));
 
 });
 
@@ -116,7 +130,7 @@ it("Multi mint Error", async function () {
   let tx, err;
 
   const [mintPrice] = await token.functions.mintPrice();
-  
+
   // adminMintで authorized へミント
   await pnouns.connect(owner).functions.adminMint([authorized.address], [1]);
 
@@ -155,7 +169,7 @@ it("insufficient funds Error", async function () {
 
   const [mintPrice] = await token.functions.mintPrice();
   // mint オーナーでないunauthorizedユーザで実行
-  await expect(token.connect(unauthorized).functions.mintPNouns([1,2,3,4], { value: mintPrice.mul(3) }))
+  await expect(token.connect(unauthorized).functions.mintPNouns([1, 2, 3, 4], { value: mintPrice.mul(3) }))
     .to.be.revertedWith("insufficient funds");
 
 });
