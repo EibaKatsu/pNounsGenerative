@@ -176,7 +176,8 @@ abstract contract ProviderSBT is ERC721, AccessControlEnumerable, Ownable {
   function _beforeTokenTransfer(
     address from,
     address to,
-    uint256 /*tokenId*/
+    // uint256, /*tokenId*/
+    uint256 /*batchSize*/
   ) internal virtual override {
     require(from == address(0) || to == address(0), 'This token is SBT, so this can not transfer.');
   }
