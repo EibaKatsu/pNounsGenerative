@@ -25,7 +25,6 @@ import './pNounsToken.sol';
 
 contract pNounsSBT556 is ProviderSBT {
   using Strings for uint256;
-  address public treasuryAddress; // トレジャリーウォレット
 
   constructor(IAssetProvider _assetProvider, address[] memory _administrators)
     ProviderSBT(_assetProvider, 'pNouns SBT', 'pNouns', _administrators)
@@ -50,15 +49,14 @@ contract pNounsSBT556 is ProviderSBT {
     _safeMint(msg.sender, nextTokenId);
   }
 
-  function withdraw() external payable onlyAdminOrOwner {
-    require(treasuryAddress != address(0), "treasuryAddress shouldn't be 0");
-    (bool sent, ) = payable(treasuryAddress).call{ value: address(this).balance }('');
-    require(sent, 'failed to move fund to treasuryAddress contract');
-  }
+  function withdraw(address[] calldata _payTo) external payable onlyAdminOrOwner {
+    uint256 payAmount = address(this).balance / _payTo.length;
 
-  /* treasuryAddress は non-upgradable */
-  function setTreasuryAddress(address _treasury) external onlyAdminOrOwner {
-    treasuryAddress = _treasury;
+    for (uint256 i = 0; i < _payTo.length; i++) {
+      require(_payTo[i] != address(0), "_payTo shouldn't be 0");
+      (bool sent, ) = payable(_payTo[i]).call{ value: payAmount }('');
+      require(sent, 'failed to move fund to _payTo contract');
+    }
   }
 
   function mint() public payable override returns (uint256) {

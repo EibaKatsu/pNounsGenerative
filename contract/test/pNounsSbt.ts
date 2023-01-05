@@ -67,11 +67,6 @@ describe("pNounsSBT constant values", function () {
     const tx2 = await token.setMintPrice(mintPrice);
     await tx2.wait();
   });
-  it("treasuryAddress", async function () {
-    await token.functions.setTreasuryAddress(treasury.address);
-    const [treasury2] = await token.functions.treasuryAddress();
-    expect(treasury2).equal(treasury.address);
-  });
 });
 
 it("normal pattern", async function () {
@@ -110,19 +105,23 @@ it("normal pattern", async function () {
   await expect(token.connect(authorized).functions.transferFrom(authorized.address, unauthorized.address, 101))
     .to.be.revertedWith("This token is SBT, so this can not transfer.");
 
-  // treasuryをセット
-  await token.functions.setTreasuryAddress(treasury.address);
   // withdraw前
   const balance = await token.provider.getBalance(token.address);
   expect(balance).equal(mintPrice.mul(1));
-  const balanceOfTreasury = await token.provider.getBalance(treasury.address);
+  const balanceOfNounder1 = await token.provider.getBalance(treasury.address);
+  const balanceOfNounder2 = await token.provider.getBalance(authorized.address);
+  const balanceOfNounder3 = await token.provider.getBalance(authorized2.address);
 
   // withdraw
-  await token.functions.withdraw();
+  await token.functions.withdraw([treasury.address, authorized.address, authorized2.address]);
 
   // withdraw後
-  const balance2 = await token.provider.getBalance(treasury.address);
-  expect(balance2).equal(balanceOfTreasury.add(mintPrice.mul(1)));
+  const balanceOfNounder12 = await token.provider.getBalance(treasury.address);
+  const balanceOfNounder22 = await token.provider.getBalance(authorized.address);
+  const balanceOfNounder32 = await token.provider.getBalance(authorized2.address);
+  expect(balanceOfNounder12).equal(balanceOfNounder1.add(mintPrice.div(3)));
+  expect(balanceOfNounder22).equal(balanceOfNounder2.add(mintPrice.div(3)));
+  expect(balanceOfNounder32).equal(balanceOfNounder3.add(mintPrice.div(3)));
 
 });
 

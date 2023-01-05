@@ -26,7 +26,6 @@ import './pNounsToken.sol';
 contract pNounsSBT is ProviderSBT {
   using Strings for uint256;
   pNounsToken public pnouns; // pNounsNFT
-  address public treasuryAddress; // トレジャリーウォレット
 
   constructor(
     IAssetProvider _assetProvider,
@@ -46,7 +45,7 @@ contract pNounsSBT is ProviderSBT {
     require(tx.origin == msg.sender, 'cannot mint from non-origin');
 
     // mintPriceが0の場合はセール停止中
-    require(mintPrice > 0, "sale is closed");
+    require(mintPrice > 0, 'sale is closed');
 
     // ミント数に応じた ETHが送金されていること
     uint256 cost = mintPrice * _tokenIds.length;
@@ -61,15 +60,14 @@ contract pNounsSBT is ProviderSBT {
     nextTokenId += _tokenIds.length;
   }
 
-  function withdraw() external payable onlyAdminOrOwner {
-    require(treasuryAddress != address(0), "treasuryAddress shouldn't be 0");
-    (bool sent, ) = payable(treasuryAddress).call{ value: address(this).balance }('');
-    require(sent, 'failed to move fund to treasuryAddress contract');
-  }
+  function withdraw(address[] calldata _payTo) external payable onlyAdminOrOwner {
+    uint256 payAmount = address(this).balance / _payTo.length;
 
-  /* treasuryAddress は non-upgradable */
-  function setTreasuryAddress(address _treasury) external onlyAdminOrOwner {
-    treasuryAddress = _treasury;
+    for (uint256 i = 0; i < _payTo.length; i++) {
+      require(_payTo[i] != address(0), "_payTo shouldn't be 0");
+      (bool sent, ) = payable(_payTo[i]).call{ value: payAmount }('');
+      require(sent, 'failed to move fund to _payTo contract');
+    }
   }
 
   function setPNounsToken(pNounsToken _pnouns) external onlyAdminOrOwner {
