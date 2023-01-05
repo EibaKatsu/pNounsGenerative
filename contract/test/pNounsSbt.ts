@@ -58,7 +58,7 @@ describe("pNounsSBT constant values", function () {
   });
   it("mintPrice", async function () {
     const [mintPrice] = await token.functions.mintPrice();
-    expect(mintPrice).equal(ethers.utils.parseEther("0.01"));
+    expect(mintPrice).equal(ethers.utils.parseEther("0.02"));
     const halfPrice = mintPrice.div(ethers.BigNumber.from(2));
     const tx = await token.setMintPrice(halfPrice);
     await tx.wait();
@@ -171,6 +171,20 @@ it("insufficient funds Error", async function () {
   // mint オーナーでないunauthorizedユーザで実行
   await expect(token.connect(unauthorized).functions.mintPNouns([1, 2, 3, 4], { value: mintPrice.mul(3) }))
     .to.be.revertedWith("insufficient funds");
+
+});
+
+it("sale is closed", async function () {
+  let tx, err;
+
+  await token.functions.setMintPrice(0);
+  const [mintPrice] = await token.functions.mintPrice();
+  expect(mintPrice).equal(0);
+  // mint オーナーでないunauthorizedユーザで実行
+  await expect(token.connect(unauthorized).functions.mintPNouns([1, 2, 3, 4], { value: mintPrice.mul(4) }))
+    .to.be.revertedWith("sale is closed");
+
+    await token.functions.setMintPrice(ethers.utils.parseEther("0.02"));
 
 });
 

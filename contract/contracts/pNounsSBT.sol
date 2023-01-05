@@ -35,7 +35,7 @@ contract pNounsSBT is ProviderSBT {
   ) ProviderSBT(_assetProvider, 'pNouns SBT', 'pNouns', _administrators) {
     pnouns = _pnouns;
     description = 'This is the Memorial SBT of pNouns project (https://pnouns.wtf/).';
-    mintPrice = 0.01 ether;
+    mintPrice = 0.02 ether;
     mintLimit = 2100;
   }
 
@@ -44,6 +44,9 @@ contract pNounsSBT is ProviderSBT {
   ) external payable {
     // originチェック
     require(tx.origin == msg.sender, 'cannot mint from non-origin');
+
+    // mintPriceが0の場合はセール停止中
+    require(mintPrice > 0, "sale is closed");
 
     // ミント数に応じた ETHが送金されていること
     uint256 cost = mintPrice * _tokenIds.length;
