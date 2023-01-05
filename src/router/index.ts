@@ -1,19 +1,23 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import Layout from "../components/Layout.vue";
-import Blank from "../components/Blank.vue";
-import NotFound from "../components/NotFound.vue";
+import Layout from "@/components/Layout.vue";
+import Blank from "@/components/Blank.vue";
+import NotFound from "@/components/NotFound.vue";
 
-import Home from "../views/Home.vue";
-import Splatter from "../views/Splatter.vue";
-import Snow from "../views/Snow.vue";
-import Nouns from "../views/Nouns.vue";
-import Paper from "../views/Paper.vue";
-import Bitcoin from "../views/Bitcoin.vue";
-import Reddit from "../views/Reddit.vue";
-import Sample from "../views/Sample.vue";
-import Experiment from "../views/Experiment.vue";
-import Star from "../views/Star.vue";
-import Alphabet from "../views/Alphabet.vue";
+import Home from "@/views/Home.vue";
+import Splatter from "@/views/Splatter.vue";
+import Snow from "@/views/Snow.vue";
+import Nouns from "@/views/Nouns.vue";
+import Paper from "@/views/Paper.vue";
+import Bitcoin from "@/views/Bitcoin.vue";
+import Reddit from "@/views/Reddit.vue";
+import Sample from "@/views/Sample.vue";
+import Experiment from "@/views/Experiment.vue";
+import Star from "@/views/Star.vue";
+import Alphabet from "@/views/Alphabet.vue";
+
+import Svg from "@/views/SVG.vue";
+import SvgTest from "@/views/SVGTest.vue";
+import Message from "@/views/Message.vue";
 
 const routeChildren: Array<RouteRecordRaw> = [
   {
@@ -51,6 +55,18 @@ const routeChildren: Array<RouteRecordRaw> = [
   {
     path: "star",
     component: Star,
+  },
+  {
+    path: "svg",
+    component: Svg,
+  },
+  {
+    path: "svgtest",
+    component: SvgTest,
+  },
+  {
+    path: "message",
+    component: Message,
   },
   {
     path: "alphabet",

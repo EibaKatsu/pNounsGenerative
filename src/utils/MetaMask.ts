@@ -1,4 +1,4 @@
-import store from "../store";
+import store from "@/store";
 
 export const requestAccount = async () => {
   const ethereum = store.state.ethereum;
@@ -31,16 +31,7 @@ export interface ProviderRpcError extends Error {
   data?: unknown;
 }
 
-export const ChainIds = {
-  Mainnet: "0x1",
-  RinkebyTestNet: "0x4",
-  Goerli: "0x5",
-  Polygon: "0x89",
-  Mumbai: "0x13881",
-  Localhost: "0x7a69", // not sure
-};
-
-export const ChainIdMap: any = {
+export const ChainIdMap: { [key: string]: string } = {
   mainnet: "0x1",
   rinkeby: "0x4",
   goerli: "0x5",

@@ -24,11 +24,16 @@
 <script lang="ts">
 import { defineComponent, computed } from "vue";
 import { useStore } from "vuex";
-import { switchNetwork } from "../utils/MetaMask";
+import { switchNetwork } from "@/utils/MetaMask";
 import Connect from "@/components/Connect.vue";
 
 export default defineComponent({
-  props: ["expectedNetwork"],
+  props: {
+    expectedNetwork: {
+      type: String,
+      required: true,
+    },
+  },
   components: {
     Connect,
   },
