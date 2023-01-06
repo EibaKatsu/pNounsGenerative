@@ -49,12 +49,24 @@ contract pNounsSBT556 is ProviderSBT {
     _safeMint(msg.sender, nextTokenId);
   }
 
-  function withdraw(address[] calldata _payTo) external payable onlyAdminOrOwner {
-    uint256 payAmount = address(this).balance / _payTo.length;
+  /**
+  コストを差し引いた金額を _payToへ均等割送金する
+   */
+  function withdraw(
+    address[] calldata _payTo,
+    address _costTo,
+    uint256 _cost
+  ) external payable onlyAdminOrOwner {
+    require(address(this).balance > _cost, 'cost is over balance');
+
+    uint256 payAmount = (address(this).balance - _cost) / _payTo.length;
+
+    require(_costTo != address(0), "_payTo shouldn't be 0");
+    (bool sent, ) = payable(_costTo).call{ value: _cost }('');
 
     for (uint256 i = 0; i < _payTo.length; i++) {
       require(_payTo[i] != address(0), "_payTo shouldn't be 0");
-      (bool sent, ) = payable(_payTo[i]).call{ value: payAmount }('');
+      (sent, ) = payable(_payTo[i]).call{ value: payAmount }('');
       require(sent, 'failed to move fund to _payTo contract');
     }
   }

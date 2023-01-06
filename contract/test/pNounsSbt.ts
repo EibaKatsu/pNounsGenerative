@@ -106,22 +106,33 @@ it("normal pattern", async function () {
     .to.be.revertedWith("This token is SBT, so this can not transfer.");
 
   // withdraw前
-  const balance = await token.provider.getBalance(token.address);
+  var balance = await token.provider.getBalance(token.address);
   expect(balance).equal(mintPrice.mul(1));
+  const balanceOfCostTo = await token.provider.getBalance(administrator.address);
   const balanceOfNounder1 = await token.provider.getBalance(treasury.address);
   const balanceOfNounder2 = await token.provider.getBalance(authorized.address);
   const balanceOfNounder3 = await token.provider.getBalance(authorized2.address);
 
   // withdraw
-  await token.functions.withdraw([treasury.address, authorized.address, authorized2.address]);
+
+  // cost超過
+  await expect(token.functions.withdraw([treasury.address, authorized.address, authorized2.address], administrator.address, balance))
+    .to.be.revertedWith("cost is over balance");
+
+  // 10%をコスト、その他を均等割
+  const cost = balance.div(10);
+  balance = balance.sub(cost);
+  await token.functions.withdraw([treasury.address, authorized.address, authorized2.address], administrator.address, cost);
 
   // withdraw後
+  const balanceOfCostTo2 = await token.provider.getBalance(administrator.address);
   const balanceOfNounder12 = await token.provider.getBalance(treasury.address);
   const balanceOfNounder22 = await token.provider.getBalance(authorized.address);
   const balanceOfNounder32 = await token.provider.getBalance(authorized2.address);
-  expect(balanceOfNounder12).equal(balanceOfNounder1.add(mintPrice.div(3)));
-  expect(balanceOfNounder22).equal(balanceOfNounder2.add(mintPrice.div(3)));
-  expect(balanceOfNounder32).equal(balanceOfNounder3.add(mintPrice.div(3)));
+  expect(balanceOfCostTo2).equal(balanceOfNounder1.add(cost));
+  expect(balanceOfNounder12).equal(balanceOfNounder1.add(balance.div(3)));
+  expect(balanceOfNounder22).equal(balanceOfNounder2.add(balance.div(3)));
+  expect(balanceOfNounder32).equal(balanceOfNounder3.add(balance.div(3)));
 
 });
 
