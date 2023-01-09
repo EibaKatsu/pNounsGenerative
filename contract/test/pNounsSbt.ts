@@ -90,6 +90,14 @@ it("normal pattern", async function () {
   const [tokenOwner2] = await token.functions.ownerOf(ethers.BigNumber.from(101));
   expect(tokenOwner2).equal(authorized.address);
 
+  // tokenId=101がミントされているか
+  const [hasMinted] = await token.functions.isMinted(ethers.BigNumber.from(101));
+  expect(hasMinted).equal(true);
+
+  // tokenId=102がミントされているか
+  const [hasMinted2] = await token.functions.isMinted(ethers.BigNumber.from(102));
+  expect(hasMinted2).equal(false);
+
   const [count2] = await token.functions.totalSupply();
   expect(count2.toNumber()).equal(Number(totalSupply) + 1);
 

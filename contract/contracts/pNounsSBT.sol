@@ -25,6 +25,7 @@ import './pNounsToken.sol';
 
 contract pNounsSBT is ProviderSBT {
   using Strings for uint256;
+
   pNounsToken public pnouns; // pNounsNFT
 
   constructor(
@@ -84,6 +85,10 @@ contract pNounsSBT is ProviderSBT {
 
   function setPNounsToken(pNounsToken _pnouns) external onlyAdminOrOwner {
     pnouns = _pnouns;
+  }
+
+  function isMinted(uint256 tokenId) public view returns (bool) {
+    return _exists(tokenId);
   }
 
   function mint() public payable override returns (uint256) {
