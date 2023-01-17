@@ -35,7 +35,7 @@ contract pNounsSBT is ProviderSBT {
   ) ProviderSBT(_assetProvider, 'pNouns SBT', 'pNouns', _administrators) {
     pnouns = _pnouns;
     description = 'This is the Memorial SBT of pNouns project (https://pnouns.wtf/).';
-    mintPrice = 0.02 ether;
+    mintPrice = 0.002 ether;
     mintLimit = 2100;
   }
 

@@ -119,3 +119,6 @@ pNounsToken.solを開く
     _ASSETPROVIDER : 0x70F3d33b1C3A4FcF6B8F55ADF6c5B173925a958b
     開発用Gnosis : 0x6Be0E4e7798430d92FE5e504B77F02C647D3eD23
     Administrators : ["0x6Be0E4e7798430d92FE5e504B77F02C647D3eD23"]
+
+# ts-node
+./node_modules/.bin/ts-node scripts/deploy_pnouns556.ts 

@@ -27,10 +27,10 @@ contract pNounsSBT556 is ProviderSBT {
   using Strings for uint256;
 
   constructor(IAssetProvider _assetProvider, address[] memory _administrators)
-    ProviderSBT(_assetProvider, 'pNouns SBT', 'pNouns', _administrators)
+    ProviderSBT(_assetProvider, 'pNouns SBT 556', 'pNounsSBT556', _administrators)
   {
     description = 'This is the Memorial SBT of Winning bid Noun 556 (https://pnouns.wtf/).';
-    mintPrice = 0.02 ether;
+    mintPrice = 0.002 ether;
     // mintLimit = 2100;  Limitを設定しない
   }
 

@@ -17,7 +17,7 @@ import '../packages/graphics/SVG.sol';
 import '../packages/graphics/Text.sol';
 import '../packages/graphics/IFontProvider.sol';
 
-contract PNounsPrivider556 is IAssetProviderEx, Ownable, IERC165 {
+contract PNounsProvider556 is IAssetProviderEx, Ownable, IERC165 {
   using Strings for uint256;
   using Randomizer for Randomizer.Seed;
   using Vector for Vector.Struct;
