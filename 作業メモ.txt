@@ -122,3 +122,6 @@ pNounsToken.solを開く
 
 # ts-node
 ./node_modules/.bin/ts-node scripts/deploy_pnouns556.ts 
+
+# 画像providerのテスト
+npx hardhat run ./scripts/deploy_test8japanouns3.ts --network goerli
