@@ -125,3 +125,6 @@ pNounsToken.solを開く
 
 # 画像providerのテスト
 npx hardhat run ./scripts/deploy_test8japanouns3.ts --network goerli
+
+# hardhat ownerにガスを追加
+npx hardhat faucet 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 10000
