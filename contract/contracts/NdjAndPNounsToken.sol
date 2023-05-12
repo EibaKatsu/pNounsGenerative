@@ -40,30 +40,16 @@ contract NdjAndPNounsToken is pNounsContractFilter2 {
   mapping(address => uint256) public mintCount; // アドレスごとのミント数
 
   // PreSaleでミントOKとするコントラクト
-    IERC721[] public whitelist = [
-      '0x4be962499ce295b1ed180f923bf9c73b6357de80', // pNouns
-      '0x898a7dBFdDf13962dF089FBC8F069Fa7CE92cDBb', // NounsDAOJapan PFP
-      '0x866648Ef4Dd51e857cA05ea200eD5D5D0c6f93Ce', // NounsDAOJapanPOAP
-      '0x09d53609a3709BBc1206B9Aa8C54DC71625e31aC', // NounishCNP
-      '0xd5EF5438928E81A43a49c95c1b875aAe832C980F', // On-Chain Alphabet
-      '0x1e3516211Fe0CB030802237B4C4CE8277733a3B9', // On-Chain dotNouns
-      '0xC7FA5764f936bEB859869a96d336D29D9cFe7D25', // On-Chain PaperNouns
-      '0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03', // Nouns
-      '0x558BFFF0D583416f7C4e380625c7865821b8E95C', // Gnars
-      '0x4b10701Bfd7BFEdc47d50562b76b436fbB5BdB3B', // Lil Nouns
-      '0xAc3aaFF5576CD40343651f1a32DD160Df3b36537', // CNNouns
-      '0xAe28895B1cf5bF36Ded3cF2056559736Aa1a4E1B'  // UNouns
-    ];
+    IERC721[] whitelist ;
 
-  // constructor(IAssetProvider _assetProvider, address[] memory _administrators, IERC721[] memory _whiteList)
-  constructor(IAssetProvider _assetProvider, address[] memory _administrators)
+  constructor(IAssetProvider _assetProvider, address[] memory _administrators, IERC721[] memory _whiteList)
     pNounsContractFilter2(_assetProvider, 'NDJ & pNouns collaboration NFT', 'NDJ&pNouns', _administrators)
   {
     description = 'This is the collaboration NFT between Nouns DAO Japan and pNouns.';
     mintPrice = 0 ether;
     mintLimit = 10000;
 
-    // whitelist = _whiteList;
+    whitelist = _whiteList;
     _setDefaultRoyalty(payable(treasuryAddress), 1000);
 
     _safeMint(treasuryAddress, mintForTreasuryAddress);

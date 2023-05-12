@@ -34,7 +34,7 @@ const config: HardhatUserConfig = {
       }
     }
   },
-  // defaultNetwork: "localhost",
+  defaultNetwork: "localhost",
   networks: {
     mumbai: {
       url: "https://rpc-mumbai.maticvigil.com",
