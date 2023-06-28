@@ -21,6 +21,7 @@ pragma solidity ^0.8.6;
 import '@openzeppelin/contracts/utils/Strings.sol';
 import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 import './pNounsContractFilter2.sol';
+import './imageParts/interfaces/ISnapshotStore.sol';
 
 import { NounsToken } from './external/nouns/NounsToken.sol';
 
@@ -31,30 +32,38 @@ contract PNounsPoapToken is pNounsContractFilter2 {
   address public treasuryAddress = 0x52A76a606AC925f7113B4CC8605Fe6bCad431EbB; // 開発ウォレット
   mapping(address => uint256) public mintCount; // アドレスごとのミント数
 
-  NounsToken public immutable nounsToken;
+  NounsToken public nounsToken;
+  ISnapshotStore public immutable snapshotStore;
 
   constructor(
     IAssetProvider _assetProvider,
+    ISnapshotStore _snapshotStore,
     NounsToken _nounsToken,
     address[] memory _administrators
   ) pNounsContractFilter2(_assetProvider, 'pNouns Voting POAP', 'pNouns POAP', _administrators) {
     description = 'This is the POAP of the pNouns Voting.';
+    snapshotStore = _snapshotStore;
     nounsToken = _nounsToken;
     _setDefaultRoyalty(payable(treasuryAddress), 1000);
   }
 
-  function adminMint(address[] memory _to) public onlyAdminOrOwner {
+  function startMint() public onlyAdminOrOwner {
+    // poapはtokenid=1からスタートするため、nounsTokenのtokenId=0をmintしておく
+    nounsToken.mint();
+  }
+
+  function adminMint(address[] memory _to, ISnapshotStore.Snapshot memory _snapshot) public onlyAdminOrOwner {
+    uint256 snapshotIndex = snapshotStore.register(_snapshot);
 
     // ミント処理
     for (uint256 i = 0; i < _to.length; i++) {
       _safeMint(_to[i], 1);
       nounsToken.mint();
       mintCount[_to[i]]++;
+      snapshotStore.setSnapshot(nextTokenId + 1, snapshotIndex);
+      nextTokenId++;
     }
-    nextTokenId += _to.length;
   }
-
-  function _mintNouns() private {}
 
   function withdraw() external payable onlyAdminOrOwner {
     require(treasuryAddress != address(0), "treasuryAddress shouldn't be 0");
@@ -64,6 +73,10 @@ contract PNounsPoapToken is pNounsContractFilter2 {
 
   function setTreasuryAddress(address _treasury) external onlyAdminOrOwner {
     treasuryAddress = _treasury;
+  }
+
+  function setNounsToken(NounsToken _nounsToken) external onlyAdminOrOwner {
+    nounsToken = _nounsToken;
   }
 
   function mint() public payable override returns (uint256) {

@@ -17,6 +17,7 @@ import '../packages/graphics/Text.sol';
 import '../packages/graphics/IFontProvider.sol';
 
 import { NounsToken } from '../external/nouns/NounsToken.sol';
+import '../imageParts/interfaces/ISnapshotStore.sol';
 
 contract PNounsProvider3 is IAssetProviderEx, Ownable, IERC165 {
   using Strings for uint256;
@@ -27,14 +28,30 @@ contract PNounsProvider3 is IAssetProviderEx, Ownable, IERC165 {
   using TX for string;
   using Trigonometry for uint;
 
+  INounsSeeder.Seed public seedFor553 =
+    INounsSeeder.Seed({ background: 1, body: 28, accessory: 47, head: 48, glasses: 16 });
+  INounsSeeder.Seed public seedFor556 =
+    INounsSeeder.Seed({ background: 1, body: 7, accessory: 37, head: 238, glasses: 12 });
   IFontProvider public immutable font;
   NounsAssetProviderV2 public immutable nounsProvider;
+  ISnapshotStore public immutable snapshotStore;
 
-  NounsToken public immutable nounsToken;
+  NounsToken public nounsToken;
+  uint256 seriesTextCount;
 
-  constructor(IFontProvider _font, NounsAssetProviderV2 _nounsProvider, NounsToken _nounsToken) {
+  constructor(
+    IFontProvider _font,
+    NounsAssetProviderV2 _nounsProvider,
+    ISnapshotStore _snapshotStore,
+    NounsToken _nounsToken
+  ) {
     font = _font;
     nounsProvider = _nounsProvider;
+    snapshotStore = _snapshotStore;
+    nounsToken = _nounsToken;
+  }
+
+  function setNounsToken(NounsToken _nounsToken) external onlyOwner {
     nounsToken = _nounsToken;
   }
 
@@ -124,51 +141,60 @@ contract PNounsProvider3 is IAssetProviderEx, Ownable, IERC165 {
     string idNouns;
     SVG.Element svgNouns;
     string svg;
+    string idNouns553;
+    SVG.Element svgNouns553;
+    string svg553;
     string seriesText;
     SVG.Element series;
     SVG.Element nouns;
+    SVG.Element nouns553;
+    uint256 noun553Position;
+    uint256 noun553X;
+    uint256 noun553Y;
   }
 
   function generateSVGPart(uint256 _assetId) public view override returns (string memory svgPart, string memory tag) {
     StackFrame2 memory stack;
-    tag = string(abi.encodePacked('circles', _assetId.toString()));
-    stack.width = SVG.textWidth(font, 'pNouns Voting POAP');
-    stack.pnouns = SVG.text(font, 'pNouns').fill('#224455').transform(TX.scale1000((1000 * 1024) / stack.width));
+    tag = string(abi.encodePacked('pnouns_', _assetId.toString()));
 
-    if (_assetId < 10) {
-      stack.seriesText = string(abi.encodePacked('000', _assetId.toString(), '/2100'));
-    } else if (_assetId < 100) {
-      stack.seriesText = string(abi.encodePacked('00', _assetId.toString(), '/2100'));
-    } else if (_assetId < 1000) {
-      stack.seriesText = string(abi.encodePacked('0', _assetId.toString(), '/2100'));
-    } else {
-      stack.seriesText = string(abi.encodePacked(_assetId.toString(), '/2100'));
-    }
+    // title
+    stack.seriesText = snapshotStore.getTitle(_assetId);
     stack.width = SVG.textWidth(font, stack.seriesText);
     stack.series = SVG.text(font, stack.seriesText).fill('#224455').transform(
-      TX.translate(1024 - int(stack.width / 10), 1024 - 102).scale('0.1')
+      TX.translate(52, 1024 - 52).scale('0.04')
     );
 
+    // main Noun
     (stack.svg, stack.idNouns) = nounsProvider.getNounsSVGPart(_assetId);
     stack.svgNouns = SVG.element(bytes(stack.svg));
-    stack.nouns = SVG
-      .group([SVG.rect().fill('#d5d7e1'), SVG.use(stack.idNouns)])
-      .transform('translate(204,300) scale(0.6)')
-      .mask('circleMask');
+    stack.nouns = SVG.use(stack.idNouns).transform('translate(52,52) scale(0.9)');
+
+    // define position of Noun553
+    Randomizer.Seed memory seed = Randomizer.Seed(_assetId, 0);
+    (seed, stack.noun553Position) = seed.random(3);
+    (seed, stack.noun553X) = seed.random(100);
+    (seed, stack.noun553Y) = seed.random(400);
+    // stack.noun553X = 100;
+    // stack.noun553Y = 400;
+    // stack.noun553Position = _assetId % 3;
+    if (stack.noun553Position % 2 == 0) {
+      stack.noun553X += 700;
+    }
+    if (stack.noun553Position < 2) {
+      stack.noun553Y += 500;
+    }
+
+    // Noun553
+    stack.idNouns553 = 'Noun5530r556';
+    stack.svg553 = nounsProvider.svgForSeed((_assetId % 2 == 0 ? seedFor553 : seedFor556), stack.idNouns553);
+    stack.svgNouns553 = SVG.element(bytes(stack.svg553));
+    stack.nouns553 = SVG.use(stack.idNouns553).transform(
+      string(abi.encodePacked('translate(', stack.noun553X.toString(), ',', stack.noun553Y.toString(), ') scale(0.15)'))
+    );
 
     svgPart = string(
       SVG
-        .list(
-          [
-            stack.svgNouns,
-            SVG.mask('circleMask', SVG.circle(512, 512, 512).fill('white')),
-            SVG
-              .group(
-                [circles(_assetId).transform('translate(102,204) scale(0.8)'), stack.pnouns, stack.series, stack.nouns]
-              )
-              .id(tag)
-          ]
-        )
+        .list([stack.svgNouns, stack.svgNouns553, SVG.group([stack.series, stack.nouns, stack.nouns553]).id(tag)])
         .svg()
     );
   }

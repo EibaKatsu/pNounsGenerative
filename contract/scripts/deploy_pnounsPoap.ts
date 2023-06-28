@@ -6,11 +6,11 @@ import addresses from '@nouns/sdk/dist/contract/addresses.json';
 // const nounsSeeder: string = network.name == 'goerli' ? addresses[5].nounsSeeder : addresses[1].nounsSeeder;
 // const nftDescriptor: string = network.name == 'goerli' ? addresses[5].nftDescriptor : addresses[1].nftDescriptor;
 
-const nounsToken: string = '0xf8f404afD11A2E6caAa1f3E8C62a0143813b272E';  // mumbai
+// const nounsToken: string = '0x9625EA365d2983B9da115A789c03d3043fdDD7cB';  // mumbai
 const font: string = '0xF3636358069588D2A16a81d27e7e8cB15Eb3827B';  // mumbai
-const nounsDescriptor: string = '0xA6f003aa2E8b8EbAe9e3b7792719A08Ea8683107'; // mumbai
-const nounsSeeder: string = '0x5f5C984E0BAf150D5a74ae21f4777Fd1947DE8c9'; // mumbai
-const nftDescriptor: string = '0xC93218fF7C44cbEB57c7661DCa886deCBc0E07C0'; // mumbai
+const nounsDescriptor: string = '0xeF0dFbC1da73CF62ec59b4BA7eE8E9AD8472441F'; // mumbai
+const nounsSeeder: string = '0xe9F379fD86F04CFa016f650EE56ea969958079e8'; // mumbai
+// const nftDescriptor: string = '0x1881c541E9d83880008B3720de0E537C34052ecf'; // mumbai
 
 // const nounsDescriptor: string = '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0'; // localhost
 // const nounsSeeder: string = '0x5FC8d32690cc91D4c39d9d3abcBD16989F875707'; // localhost
@@ -21,32 +21,68 @@ const committee = "0x52A76a606AC925f7113B4CC8605Fe6bCad431EbB";
 
 async function main() {
 
+  const factoryNounsToken = await ethers.getContractFactory('NounsToken');
+  const myNounsToken = await factoryNounsToken.deploy(committee, committee, nounsDescriptor, nounsSeeder, committee);
+  await myNounsToken.deployed();
+  console.log(`##NounsToken="${myNounsToken.address}"`);
+  await runCommand(`npx hardhat verify ${myNounsToken.address} ${committee} ${committee} ${nounsDescriptor} ${nounsSeeder} ${committee} --network ${network.name} &`);
+
   const factoryAssetProvider = await ethers.getContractFactory('NounsAssetProviderV2');
-  const assetProvider = await factoryAssetProvider.deploy(nounsToken);
+  const assetProvider = await factoryAssetProvider.deploy(myNounsToken.address);
   await assetProvider.deployed();
   console.log(`##NounsAssetProviderV2="${assetProvider.address}"`);
-  await runCommand(`npx hardhat verify ${assetProvider.address} ${nounsToken} --network ${network.name} &`);
+  await runCommand(`npx hardhat verify ${assetProvider.address} ${myNounsToken.address} --network ${network.name} &`);
 
+  const factorySnapshotStore = await ethers.getContractFactory('SnapshotStore');
+  const snapshotStore = await factorySnapshotStore.deploy();
+  await snapshotStore.deployed();
+  console.log(`##SnapshotStore="${snapshotStore.address}"`);
+  await runCommand(`npx hardhat verify ${snapshotStore.address} --network ${network.name} &`);
 
   const factoryPnounsProvider = await ethers.getContractFactory('PNounsProvider3');
-  const pnounsProvider = await factoryPnounsProvider.deploy(font, assetProvider.address, nounsToken);
+  const pnounsProvider = await factoryPnounsProvider.deploy(font, assetProvider.address, snapshotStore.address, myNounsToken.address);
   await pnounsProvider.deployed();
   console.log(`##PNounsProvider3="${pnounsProvider.address}"`);
-  await runCommand(`npx hardhat verify ${pnounsProvider.address} ${font} ${assetProvider.address} ${nounsToken} --network ${network.name} &`);
+  await runCommand(`npx hardhat verify ${pnounsProvider.address} ${font} ${assetProvider.address} ${snapshotStore.address} ${myNounsToken.address} --network ${network.name} &`);
 
   const factoryPnounsPoap = await ethers.getContractFactory('PNounsPoapToken');
-  const pnounsPoap = await factoryPnounsPoap.deploy(assetProvider.address, nounsToken, [committee]);
+  const pnounsPoap = await factoryPnounsPoap.deploy(pnounsProvider.address,snapshotStore.address, myNounsToken.address, [committee]);
   await pnounsPoap.deployed();
   console.log(`##PNounsPoapToken="${pnounsPoap.address}"`);
   await runCommand('#★★★ tmp/PNounsPoapToken.ts に引数を指定★★★');
-  await runCommand(` ${pnounsPoap.address} ${assetProvider.address} ${nounsToken} ${[committee]}`);
-  await runCommand(`npx hardhat verify ${pnounsPoap.address} --network ${network.name} --constructor-args tmp/PNounsPoapToken.ts`);
+  await runCommand(`1: ${pnounsProvider.address} 2: ${snapshotStore.address} 3: ${myNounsToken.address} 4: ${committee}`);
+  await runCommand(`npx hardhat verify ${pnounsPoap.address} --network ${network.name} --constructor-args tmp/PNounsPoapToken.ts &`);
+
+  console.log(`##smyNounsToken.setMinter`);
+  await myNounsToken.setMinter(pnounsPoap.address);
+
+  await waitAndRun();
+  console.log(`##pnounsPoap.startMint`);
+  await pnounsPoap.startMint();
+
+  await waitAndRun();
+  console.log(`##pnounsPoap.adminMint`);
+  const snapshot = {
+    id: 100,
+    title: "[Prop 306] SNP - SD Comic Con: Connecting a Cornucopia of Creators",
+    start: 1920003,
+    end: 1930003
+  }
+  await pnounsPoap.adminMint([committee,committee,committee,committee,committee,committee], snapshot);
 
 }
+
+async function waitAndRun() {
+  await new Promise(resolve => setTimeout(resolve, 5000));
+  console.log('5 seconds passed!');
+}
+
+waitAndRun();
 
 async function runCommand(command: string) {
   if (network.name !== 'localhost') {
     console.log(command);
+    console.log('');
   }
   // なぜかコマンドが終了しないので手動で実行
   // await exec(command, (error, stdout, stderr) => {
