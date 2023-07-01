@@ -52,15 +52,21 @@ contract PNounsPoapToken is pNounsContractFilter2 {
     nounsToken.mint();
   }
 
-  function adminMint(address[] memory _to, ISnapshotStore.Snapshot memory _snapshot) public onlyAdminOrOwner {
+  function adminMint(
+    address[] memory _to,
+    uint256[] memory _vp,
+    ISnapshotStore.Snapshot memory _snapshot
+  ) public onlyAdminOrOwner {
     uint256 snapshotIndex = snapshotStore.register(_snapshot);
+
+    require(_to.length == _vp.length, "invalid array num.");
 
     // ミント処理
     for (uint256 i = 0; i < _to.length; i++) {
       _safeMint(_to[i], 1);
       nounsToken.mint();
       mintCount[_to[i]]++;
-      snapshotStore.setSnapshot(nextTokenId + 1, snapshotIndex);
+      snapshotStore.setSnapshot(nextTokenId + 1, snapshotIndex, _vp[i]);
       nextTokenId++;
     }
   }
