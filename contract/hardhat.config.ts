@@ -36,6 +36,11 @@ const config: HardhatUserConfig = {
   },
   defaultNetwork: "localhost",
   networks: {
+    polygon: {
+      url: "https://polygon-mainnet.g.alchemy.com/v2/" + process.env.ALCHEMY_API_KEY,
+      accounts:
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+    },
     mumbai: {
       // url: "https://rpc-mumbai.maticvigil.com",
       url: "https://polygon-mumbai.g.alchemy.com/v2/" + process.env.ALCHEMY_API_KEY,
