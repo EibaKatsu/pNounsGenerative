@@ -87,28 +87,27 @@ contract PNounsProvider3 is IAssetProviderEx, Ownable, IERC165 {
     uint256 vp = snapshotStore.getVp(_assetId);
     traits = string(
       abi.encodePacked(
-        '{'
-        '"id":"',
+        '{',
+        '"trait_type": "id" , "value":"',
         snapshot.id,
-        '",',
-        '"title":"',
+        '"},',
+        '{"trait_type": "title" , "value":"',
         snapshot.title,
-        '",',
-        '"',
+        '"},',
+        '{"trait_type": "',
         snapshot.choices,
-        '":"',
+        '", "value":"',
         snapshot.scores,
-        '",',
-        '"start":"',
+        '"},',
+        '{"trait_type": "start" , "value":"',
         snapshot.start.toString(),
-        '",',
-        '"end":"',
+        '"},',
+        '{"trait_type": "end" , "value":"',
         snapshot.end.toString(),
-        '",',
-        '"vp":"',
+        '"},',
+        '{"trait_type": "vp" , "value":"',
         vp.toString(),
-        '"',
-        '}'
+        '"}'
       )
     );
   }

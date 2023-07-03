@@ -4,6 +4,7 @@ import '../interfaces/ISnapshotStore.sol';
 
 contract SnapshotStore is ISnapshotStore {
   uint256 private nextPartIndex = 1;
+  uint256 private constant startBlockNumber = 1685707200;
   mapping(uint256 => Snapshot) private partsList;
   mapping(uint256 => uint256) private tokenIdToSnapshot;
   mapping(uint256 => uint256) private tokenIdToVp;
@@ -15,7 +16,11 @@ contract SnapshotStore is ISnapshotStore {
   }
 
   function currentBlockNumber() external view returns (uint256) {
-    return partsList[nextPartIndex - 1].end;
+    if (nextPartIndex == 1) {
+      return startBlockNumber;
+    } else {
+      return partsList[nextPartIndex - 1].end;
+    }
   }
 
   function setSnapshot(uint256 tokenId, uint256 snapshotId, uint256 vp) external {
@@ -23,7 +28,7 @@ contract SnapshotStore is ISnapshotStore {
     tokenIdToVp[tokenId] = vp;
   }
 
-  function getSnapshot(uint256 index) external view returns (Snapshot memory output){
+  function getSnapshot(uint256 index) external view returns (Snapshot memory output) {
     output = partsList[tokenIdToSnapshot[index]];
   }
 

@@ -60,33 +60,33 @@ async function main() {
   console.log(`##pnounsPoap.startMint`);
   await pnounsPoap.startMint();
 
-  await waitAndRun();
-  await waitAndRun();
-  console.log(`##pnounsPoap.adminMint`);
-  const snapshot = {
-    id: 100,
-    title: "[Prop 306] SNP - SD Comic Con: Connecting a Cornucopia of Creators",
-    choices: "[賛成,反対,棄権]",
-    scores: "[120,11,3]",
-    start: 1920003,
-    end: 1930003
-  }
+  // await waitAndRun();
+  // await waitAndRun();
+  // console.log(`##pnounsPoap.adminMint`);
+  // const snapshot = {
+  //   id: 100,
+  //   title: "[Prop 306] SNP - SD Comic Con: Connecting a Cornucopia of Creators",
+  //   choices: "[賛成,反対,棄権]",
+  //   scores: "[120,11,3]",
+  //   start: 1920003,
+  //   end: 1930003
+  // }
 
-  await pnounsPoap.adminMint([committee, committee, committee, committee, committee, committee],
-    [1, 2, 3, 4, 5, 6], snapshot);
+  // await pnounsPoap.adminMint([committee, committee, committee, committee, committee, committee],
+  //   [1, 2, 3, 4, 5, 6], snapshot);
 
-  await waitAndRun();
-  console.log(`##pnounsPoap.adminMint2`);
-  const snapshot2 = {
-    id: 101,
-    title: "[Prop 308] NounsFes2023",
-    choices: "[賛成,反対,棄権]",
-    scores: "[50,12,0]",
-    start: 1920004,
-    end: 1930004
-  }
-  await pnounsPoap.adminMint([committee, committee, committee, committee, committee, committee],
-    [10, 20, 30, 40, 50, 60], snapshot2);
+  // await waitAndRun();
+  // console.log(`##pnounsPoap.adminMint2`);
+  // const snapshot2 = {
+  //   id: 101,
+  //   title: "[Prop 308] NounsFes2023",
+  //   choices: "[賛成,反対,棄権]",
+  //   scores: "[50,12,0]",
+  //   start: 1920004,
+  //   end: 1930004
+  // }
+  // await pnounsPoap.adminMint([committee, committee, committee, committee, committee, committee],
+  //   [10, 20, 30, 40, 50, 60], snapshot2);
 
 }
 
