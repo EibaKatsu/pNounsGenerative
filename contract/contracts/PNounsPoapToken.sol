@@ -94,7 +94,7 @@ contract PNounsPoapToken is pNounsContractFilter2 {
   }
 
   function tokenName(uint256 _tokenId) internal view virtual override returns (string memory) {
-    return string(abi.encodePacked('#', _tokenId.toString()));
+    return string(abi.encodePacked('POAP ', _tokenId.toString()));
   }
 
   // 10% royalties for treasuryAddressß

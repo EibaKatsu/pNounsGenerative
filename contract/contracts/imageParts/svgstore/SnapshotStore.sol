@@ -1,29 +1,44 @@
 pragma solidity ^0.8.6;
 
 import '../interfaces/ISnapshotStore.sol';
+import { Ownable } from '@openzeppelin/contracts/access/Ownable.sol';
 
-contract SnapshotStore is ISnapshotStore {
+contract SnapshotStore is ISnapshotStore, Ownable {
   uint256 private nextPartIndex = 1;
-  uint256 private constant startBlockNumber = 1685707200;
+  uint256 private latestBlockNumber = 0;
   mapping(uint256 => Snapshot) private partsList;
   mapping(uint256 => uint256) private tokenIdToSnapshot;
   mapping(uint256 => uint256) private tokenIdToVp;
 
-  function register(Snapshot memory _snapshot) external returns (uint256) {
+  address public minter ;
+
+  ////////// modifiers //////////
+  modifier onlyMinterOrOwner() {
+    require(owner() == _msgSender() || minter == _msgSender(), "Not owner or minter");
+    _;
+  }
+
+  function register(Snapshot memory _snapshot) external onlyMinterOrOwner returns (uint256) {
+    if (latestBlockNumber < _snapshot.end) {
+      latestBlockNumber = _snapshot.end;
+    }
     partsList[nextPartIndex] = _snapshot;
     nextPartIndex++;
     return nextPartIndex - 1;
   }
 
   function currentBlockNumber() external view returns (uint256) {
-    if (nextPartIndex == 1) {
-      return startBlockNumber;
-    } else {
-      return partsList[nextPartIndex - 1].end;
-    }
+    return latestBlockNumber;
   }
 
-  function setSnapshot(uint256 tokenId, uint256 snapshotId, uint256 vp) external {
+  function setCurrentBlockNumber(uint256 _blockNumber) external onlyOwner {
+    latestBlockNumber = _blockNumber;
+  }
+
+  function setMinter(address _minter) external onlyOwner {
+    minter = _minter;
+  }
+  function setSnapshot(uint256 tokenId, uint256 snapshotId, uint256 vp) external onlyMinterOrOwner {
     tokenIdToSnapshot[tokenId] = snapshotId;
     tokenIdToVp[tokenId] = vp;
   }

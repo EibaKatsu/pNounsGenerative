@@ -38,6 +38,8 @@ const config: HardhatUserConfig = {
   networks: {
     polygon: {
       url: "https://polygon-mainnet.g.alchemy.com/v2/" + process.env.ALCHEMY_API_KEY,
+      gasMultiplier: 1.7,
+      gasPrice: 100000000000, // 100 Gwei
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },

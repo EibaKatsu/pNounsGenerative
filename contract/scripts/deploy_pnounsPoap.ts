@@ -1,31 +1,32 @@
 import { ethers, network } from 'hardhat';
 import { exec } from 'child_process';
 import addresses from '@nouns/sdk/dist/contract/addresses.json';
+import { BigNumber } from 'ethers';
 
 // const nounsDescriptor: string = network.name == 'goerli' ? addresses[5].nounsDescriptor : addresses[1].nounsDescriptor;
 // const nounsSeeder: string = network.name == 'goerli' ? addresses[5].nounsSeeder : addresses[1].nounsSeeder;
 // const nftDescriptor: string = network.name == 'goerli' ? addresses[5].nftDescriptor : addresses[1].nftDescriptor;
 
-// const nounsToken: string = '0x9625EA365d2983B9da115A789c03d3043fdDD7cB';  // mumbai
-const font: string = '0xF3636358069588D2A16a81d27e7e8cB15Eb3827B';  // mumbai
-const nounsDescriptor: string = '0xeF0dFbC1da73CF62ec59b4BA7eE8E9AD8472441F'; // mumbai
-const nounsSeeder: string = '0xe9F379fD86F04CFa016f650EE56ea969958079e8'; // mumbai
-// const nftDescriptor: string = '0x1881c541E9d83880008B3720de0E537C34052ecf'; // mumbai
+const font: string = '0x1183F445E209051ecB8f0c062153F2b2110F806A';  // polygon
+const nounsDescriptor: string = '0x3578311a15f23a290ED8CAE2ed3DA096a6F9d943'; // polygon
+const nounsSeeder: string = '0x7b7Ea6Ab721E8d56De64d959188a45DFf26C395f'; // polygon
+const nftDescriptor: string = '0x6d4e0525D491b71ff1897482A8Cf59FbB5F2599c'; // polygon
 
-// const nounsDescriptor: string = '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0'; // localhost
-// const nounsSeeder: string = '0x5FC8d32690cc91D4c39d9d3abcBD16989F875707'; // localhost
-// const nftDescriptor: string = '0x5FbDB2315678afecb367f032d93F642f64180aa3'; // localhost
+// const nounsDescriptor: string = '0x6Ad5B8B5a12a26892C6Ad6b8Ae64905D9B53da8A'; // localhost
+// const nounsSeeder: string = '0x941Ed50A3B5eCaCB6e0985886fc5ACBc5CC2ae8C'; // localhost
+// const nftDescriptor: string = '0x4DCD10c8Da99C062E06dc28f7a26917B3D45dC73'; // localhost
+// const font: string = '0x15cAbd0536f9707d1c03b21dDdC556726D7FF136';  // mumbai
 
-const committee = "0x52A76a606AC925f7113B4CC8605Fe6bCad431EbB";
-// const committee = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"; // localhost
+// const committee = "0x52A76a606AC925f7113B4CC8605Fe6bCad431EbB";  // test
+const committee = "0x4e06186a2c78986bb478a4dc4ab3ff3918937627"; // polygon
 
 async function main() {
 
   const factoryNounsToken = await ethers.getContractFactory('NounsToken');
-  const myNounsToken = await factoryNounsToken.deploy(committee, committee, nounsDescriptor, nounsSeeder, committee);
+  const myNounsToken = await factoryNounsToken.deploy(committee, committee, nounsDescriptor, nounsSeeder);
   await myNounsToken.deployed();
   console.log(`##NounsToken="${myNounsToken.address}"`);
-  await runCommand(`npx hardhat verify ${myNounsToken.address} ${committee} ${committee} ${nounsDescriptor} ${nounsSeeder} ${committee} --network ${network.name} &`);
+  await runCommand(`npx hardhat verify ${myNounsToken.address} ${committee} ${committee} ${nounsDescriptor} ${nounsSeeder} --network ${network.name} &`);
 
   const factoryAssetProvider = await ethers.getContractFactory('NounsAssetProviderV2');
   const assetProvider = await factoryAssetProvider.deploy(myNounsToken.address);
@@ -53,41 +54,41 @@ async function main() {
   await runCommand(`1: ${pnounsProvider.address} 2: ${snapshotStore.address} 3: ${myNounsToken.address} 4: ${committee}`);
   await runCommand(`npx hardhat verify ${pnounsPoap.address} --network ${network.name} --constructor-args tmp/PNounsPoapToken.ts &`);
 
-  console.log(`##smyNounsToken.setMinter`);
+  console.log(`##myNounsToken.setMinter`);
   await myNounsToken.setMinter(pnounsPoap.address);
+
+  console.log(`##snapshotStore.setMinter`);
+  await snapshotStore.setMinter(pnounsPoap.address);
 
   await waitAndRun();
   console.log(`##pnounsPoap.startMint`);
   await pnounsPoap.startMint();
 
-  // await waitAndRun();
-  // await waitAndRun();
-  // console.log(`##pnounsPoap.adminMint`);
-  // const snapshot = {
-  //   id: 100,
-  //   title: "[Prop 306] SNP - SD Comic Con: Connecting a Cornucopia of Creators",
-  //   choices: "[賛成,反対,棄権]",
-  //   scores: "[120,11,3]",
-  //   start: 1920003,
-  //   end: 1930003
-  // }
+  await waitAndRun();
 
-  // await pnounsPoap.adminMint([committee, committee, committee, committee, committee, committee],
-  //   [1, 2, 3, 4, 5, 6], snapshot);
+  const snapshot = {
+    id: 100,
+    title: "One Noun, Every Vote.",
+    choices: "type",
+    scores: "the first poap",
+    start: 0,
+    end: 0
+  }
+  // console.log(`##snapshotStore.registor`);
+  // var snapshotIndex = await snapshotStore.register(snapshot);
+  // var snapshotIndex2 = ethers.BigNumber.from(snapshotIndex.value);
+  // console.log("snapshotIndex", snapshotIndex2);
+
+  await waitAndRun();
+  console.log(`##pnounsPoap.adminMint`);
+  await pnounsPoap.adminMint([committee], [21], snapshot);
+
 
   // await waitAndRun();
-  // console.log(`##pnounsPoap.adminMint2`);
-  // const snapshot2 = {
-  //   id: 101,
-  //   title: "[Prop 308] NounsFes2023",
-  //   choices: "[賛成,反対,棄権]",
-  //   scores: "[50,12,0]",
-  //   start: 1920004,
-  //   end: 1930004
-  // }
-  // await pnounsPoap.adminMint([committee, committee, committee, committee, committee, committee],
-  //   [10, 20, 30, 40, 50, 60], snapshot2);
+  // console.log(`##pnounsPoap.tokenURI`);
+  // console.log(await pnounsPoap.tokenURI(3));
 
+  
 }
 
 async function waitAndRun() {
